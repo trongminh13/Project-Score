@@ -14,6 +14,7 @@ import 'core/utils/date_time_provider.dart';
 import 'features/fixture/fixture_injector.dart';
 import 'features/settings/settings_injector.dart';
 import 'features/soccer/soccer_injector.dart';
+import 'features/favorites/favorites_injector.dart';
 
 final sl = GetIt.instance;
 
@@ -22,6 +23,7 @@ Future<void> initApp() async {
   initSettings();
   initSoccer();
   initFixture();
+  initFavorites();
 }
 
 Future<void> initCore() async {

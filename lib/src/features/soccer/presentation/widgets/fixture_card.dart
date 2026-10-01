@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../favorites/presentation/cubit/favorites_cubit.dart';
+import '../../../favorites/presentation/cubit/favorites_state.dart';
 import 'package:live_score/src/core/constants/app_decorations.dart';
 import 'package:live_score/src/core/constants/app_spacing.dart';
 
@@ -48,12 +51,38 @@ class FixtureCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // TOP HEADER: League Name, Round
-            Center(
-              child: FixtureLeagueSection(
-                league: soccerFixture.fixtureLeague,
-                roundNum: soccerFixture.roundNum,
-                showLogo: showLeagueLogo,
-              ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                FixtureLeagueSection(
+                  league: soccerFixture.fixtureLeague,
+                  roundNum: soccerFixture.roundNum,
+                  showLogo: showLeagueLogo,
+                ),
+                Positioned(
+                  right: 0,
+                  child: BlocBuilder<FavoritesCubit, FavoritesState>(
+                    builder: (context, state) {
+                      bool isFav = false;
+                      if (state is FavoritesLoaded) {
+                        isFav = state.favoriteMatchIds.contains(soccerFixture.id.toString());
+                      }
+                      return IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: Icon(
+                          isFav ? Icons.star_rounded : Icons.star_border_rounded,
+                          color: isFav ? Colors.amber : context.colorsExt.textMuted,
+                          size: 24,
+                        ),
+                        onPressed: () {
+                          context.read<FavoritesCubit>().toggleFavoriteMatch(soccerFixture.id.toString());
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: AppSpacing.m),

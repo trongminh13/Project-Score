@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../features/favorites/presentation/cubit/favorites_cubit.dart';
+import '../features/favorites/presentation/screens/favorites_screen.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_score/src/features/fixture/presentation/cubit/fixture/fixture_cubit.dart';
@@ -22,6 +25,7 @@ class Routes {
   static const String standings = '/standings';
   static const String fixtureDetails = '/fixture_details';
   static const String settings = '/settings';
+  static const String favorites = '/favorites';
 }
 
 class AppRouter {
@@ -36,6 +40,7 @@ class AppRouter {
                 create: (context) => sl<LeaguesCubit>()..getLeagues(),
               ),
               BlocProvider(create: (context) => sl<SoccerCubit>()),
+              BlocProvider(create: (context) => sl<FavoritesCubit>()..loadFavorites()),
             ],
             child: SoccerLayout(child: child),
           );
@@ -77,6 +82,12 @@ class AppRouter {
               child: FixtureScreen(soccerFixture: state.extra as SoccerFixture),
             ),
           );
+        },
+      ),
+      GoRoute(
+        path: Routes.favorites,
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(child: FavoritesScreen());
         },
       ),
       GoRoute(

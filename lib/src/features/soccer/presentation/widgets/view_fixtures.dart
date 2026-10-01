@@ -37,10 +37,7 @@ class ViewDayFixtures extends StatelessWidget {
         Row(
           spacing: AppSpacing.s,
           children: [
-            Icon(
-              Icons.calendar_today_rounded,
-              color: context.colors.primary,
-            ),
+            Icon(Icons.calendar_today_rounded, color: context.colors.primary),
             Expanded(
               child: Text(
                 l10n.fixtures,

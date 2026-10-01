@@ -44,13 +44,7 @@ class AiInsightsView extends StatelessWidget {
               border: Border.all(color: color.withOpacity(0.3)),
             ),
             child: const Text(
-              'Analyzing match data...
-
-'
-              'ML prediction probabilities (Home Win, Draw, Away Win) '
-              'and the Generative AI (LLM) text summary will be displayed here.
-'
-              'Data will be fetched from the FastAPI backend.',
+              'Analyzing match data...\n\nML prediction probabilities (Home Win, Draw, Away Win) and the Generative AI (LLM) text summary will be displayed here.\nData will be fetched from the FastAPI backend.',
               style: TextStyle(height: 1.5),
             ),
           ),
