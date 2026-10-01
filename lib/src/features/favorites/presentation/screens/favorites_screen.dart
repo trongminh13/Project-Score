@@ -8,8 +8,19 @@ class FavoritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    try {
+      context.read<FavoritesCubit>(); // Trigger lookup to catch errors early
+    } catch (e) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Yêu thích')),
+        body: const Center(
+          child: Text('Chưa thể kết nối được danh sách yêu thích. Vui lòng thử lại sau!'),
+        ),
+      );
+    }
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('My Favorites')),
+      appBar: AppBar(title: const Text('Yêu thích')),
       body: BlocBuilder<FavoritesCubit, FavoritesState>(
         builder: (context, state) {
           if (state is FavoritesLoaded) {

@@ -68,6 +68,12 @@ class AppRouter {
               );
             },
           ),
+          GoRoute(
+            path: Routes.favorites,
+            pageBuilder: (context, state) {
+              return const NoTransitionPage(child: FavoritesScreen());
+            },
+          ),
         ],
       ),
       GoRoute(
@@ -82,12 +88,6 @@ class AppRouter {
               child: FixtureScreen(soccerFixture: state.extra as SoccerFixture),
             ),
           );
-        },
-      ),
-      GoRoute(
-        path: Routes.favorites,
-        pageBuilder: (context, state) {
-          return const NoTransitionPage(child: FavoritesScreen());
         },
       ),
       GoRoute(

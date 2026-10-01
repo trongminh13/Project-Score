@@ -76,7 +76,27 @@ class FixtureCard extends StatelessWidget {
                           size: 24,
                         ),
                         onPressed: () {
-                          context.read<FavoritesCubit>().toggleFavoriteMatch(soccerFixture.id.toString());
+                          try {
+                            final isAdding = !isFav;
+                            context.read<FavoritesCubit>().toggleFavoriteMatch(soccerFixture.id.toString());
+                            ScaffoldMessenger.of(context).clearSnackBars();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isAdding ? 'Bạn đã yêu thích trận đấu này' : 'Đã bỏ yêu thích trận đấu này',
+                                ),
+                                duration: const Duration(seconds: 2),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Tính năng yêu thích tạm thời không khả dụng.'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
                         },
                       );
                     },

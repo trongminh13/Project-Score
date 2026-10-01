@@ -25,6 +25,7 @@ class SoccerLayout extends StatelessWidget {
       Routes.soccer => 0,
       Routes.fixtures => 1,
       Routes.standings => 2,
+      Routes.favorites => 3,
       _ => 0,
     };
 
@@ -69,6 +70,11 @@ class SoccerLayout extends StatelessWidget {
                   selectedIcon: const Icon(Icons.bar_chart_rounded),
                   label: Text(l10n.standings),
                 ),
+                NavigationRailDestination(
+                  icon: const Icon(Icons.star_border_rounded),
+                  selectedIcon: const Icon(Icons.star_rounded),
+                  label: const Text('Favorites'),
+                ),
               ],
             ),
             const VerticalDivider(width: 1),
@@ -90,6 +96,7 @@ class SoccerLayout extends StatelessWidget {
     0 => context.go(Routes.soccer),
     1 => context.go(Routes.fixtures),
     2 => context.go(Routes.standings),
+    3 => context.go(Routes.favorites),
     _ => null,
   };
 }
@@ -159,6 +166,13 @@ class _FloatingBottomNav extends StatelessWidget {
                     label: l10n.standings,
                     isSelected: currentIndex == 2,
                     onTap: () => onTap(2),
+                  ),
+                  _NavItem(
+                    icon: Icons.star_border_rounded,
+                    activeIcon: Icons.star_rounded,
+                    label: 'Yêu thích',
+                    isSelected: currentIndex == 3,
+                    onTap: () => onTap(3),
                   ),
                 ],
               ),
