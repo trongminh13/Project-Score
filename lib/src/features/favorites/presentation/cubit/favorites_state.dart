@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/domain/entities/soccer_fixture.dart';
 
 abstract class FavoritesState extends Equatable {
   const FavoritesState();
@@ -8,10 +9,17 @@ abstract class FavoritesState extends Equatable {
 
 class FavoritesInitial extends FavoritesState {}
 
+class FavoritesLoading extends FavoritesState {}
+
 class FavoritesLoaded extends FavoritesState {
   final List<String> favoriteMatchIds;
-  const FavoritesLoaded({required this.favoriteMatchIds});
+  final List<SoccerFixture> favoriteMatches;
+
+  const FavoritesLoaded({
+    required this.favoriteMatchIds,
+    this.favoriteMatches = const [],
+  });
 
   @override
-  List<Object> get props => [favoriteMatchIds];
+  List<Object> get props => [favoriteMatchIds, favoriteMatches];
 }

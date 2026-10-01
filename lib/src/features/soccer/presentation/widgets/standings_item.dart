@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../config/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:live_score/src/core/extensions/color.dart';
 import 'package:live_score/src/core/extensions/context_ext.dart';
@@ -46,7 +48,9 @@ class StandingsItem extends StatelessWidget {
               ? context.colorsExt.surfaceGlass.withOpacitySafe(0.3)
               : Colors.transparent,
           child: InkWell(
-            onTap: () {}, // For hover effect
+            onTap: () {
+              context.push(Routes.teamDetails.replaceFirst(':id', teamRank.team.id.toString()));
+            },
             hoverColor: context.colorsExt.surfaceGlass,
             child: Container(
               padding: EdgeInsets.symmetric(

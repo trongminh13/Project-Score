@@ -1,3 +1,5 @@
+import '../features/team/presentation/cubit/team_cubit.dart';
+import '../features/team/presentation/screens/team_details_screen.dart';
 import 'package:flutter/material.dart';
 import '../features/favorites/presentation/cubit/favorites_cubit.dart';
 import '../features/favorites/presentation/screens/favorites_screen.dart';
@@ -26,6 +28,7 @@ class Routes {
   static const String fixtureDetails = '/fixture_details';
   static const String settings = '/settings';
   static const String favorites = '/favorites';
+  static const String teamDetails = '/team_details/:id';
 }
 
 class AppRouter {
@@ -72,6 +75,18 @@ class AppRouter {
             path: Routes.favorites,
             pageBuilder: (context, state) {
               return const NoTransitionPage(child: FavoritesScreen());
+            },
+          ),
+          GoRoute(
+            path: Routes.teamDetails,
+            pageBuilder: (context, state) {
+              final id = int.parse(state.pathParameters['id'] ?? '0');
+              return NoTransitionPage(
+                child: BlocProvider(
+                  create: (_) => sl<TeamCubit>()..getTeamDetails(id),
+                  child: TeamDetailsScreen(teamId: id),
+                ),
+              );
             },
           ),
         ],

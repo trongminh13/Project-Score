@@ -1,4 +1,5 @@
 import '../../container_injector.dart';
+import '../fixture/domain/repositories/fixture_repository.dart';
 import 'data/datasources/favorites_local_data_source.dart';
 import 'data/repositories/favorites_repository_impl.dart';
 import 'domain/repositories/favorites_repository.dart';
@@ -11,5 +12,8 @@ void initFavorites() {
   sl.registerLazySingleton<FavoritesRepository>(
     () => FavoritesRepositoryImpl(localDataSource: sl()),
   );
-  sl.registerFactory(() => FavoritesCubit(repository: sl()));
+  sl.registerFactory(() => FavoritesCubit(
+    repository: sl(),
+    fixtureRepository: sl<FixtureRepository>(),
+  ));
 }
