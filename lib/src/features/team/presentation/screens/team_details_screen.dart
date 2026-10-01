@@ -2,89 +2,121 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../../core/widgets/custom_image.dart';
+import '../../../../core/domain/entities/teams.dart';
 import '../cubit/team_cubit.dart';
 import '../cubit/team_state.dart';
 
 class TeamDetailsScreen extends StatelessWidget {
-  final int teamId;
-  const TeamDetailsScreen({super.key, required this.teamId});
+  final Team team;
+  const TeamDetailsScreen({super.key, required this.team});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<TeamCubit, TeamState>(
-        builder: (context, state) {
-          if (state is TeamLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is TeamLoaded) {
-            final team = state.teamDetails.team;
-            return DefaultTabController(
-              length: 3,
-              child: NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) {
-                  return [
-                    _DynamicTeamHeader(
-                      teamName: team.name,
-                      logoUrl: team.logo,
-                    ),
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _SliverAppBarDelegate(
-                        TabBar(
-                          indicatorColor: Theme.of(context).colorScheme.primary,
-                          labelColor: Theme.of(context).colorScheme.primary,
-                          unselectedLabelColor: Colors.grey,
-                          tabs: const [
-                            Tab(text: 'Trận đấu'),
-                            Tab(text: 'Đội hình'),
-                            Tab(text: 'Thống kê'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-                body: TabBarView(
-                  children: [
-                    _buildFixturesTab(context),
-                    _buildSquadTab(context),
-                    _buildStatsTab(context),
-                  ],
+      body: DefaultTabController(
+        length: 3,
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              _DynamicTeamHeader(
+                teamName: team.name,
+                logoUrl: team.logo,
+              ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _SliverAppBarDelegate(
+                  TabBar(
+                    indicatorColor: Theme.of(context).colorScheme.primary,
+                    labelColor: Theme.of(context).colorScheme.primary,
+                    unselectedLabelColor: Colors.grey,
+                    tabs: const [
+                      Tab(text: 'Trận đấu'),
+                      Tab(text: 'Đội hình'),
+                      Tab(text: 'Thống kê'),
+                    ],
+                  ),
                 ),
               ),
-            );
-          }
-          if (state is TeamError) {
-            return Center(child: Text('Lỗi: ${state.message}'));
-          }
-          return const SizedBox();
-        },
+            ];
+          },
+          body: TabBarView(
+            children: [
+              _buildFixturesTab(context),
+              _buildSquadTab(context),
+              _buildStatsTab(context),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildFixturesTab(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 4,
-      itemBuilder: (context, index) {
-        return Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: const Icon(Icons.sports_soccer, size: 32),
-            title: Text(
-              'Trận đấu giả định ${index + 1}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: const Text('Đang chờ API...'),
-            trailing: const Text('20:00', style: TextStyle(fontWeight: FontWeight.w600)),
-          ),
-        );
+    return BlocBuilder<TeamCubit, TeamState>(
+      builder: (context, state) {
+        if (state is TeamLoading || state is TeamInitial) {
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: 4,
+            itemBuilder: (context, index) {
+              return Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                margin: const EdgeInsets.only(bottom: 12),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  leading: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(width: 32, height: 32, color: Colors.white),
+                  ),
+                  title: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(width: double.infinity, height: 16, color: Colors.white),
+                  ),
+                  subtitle: Row(
+                    children: [
+                      const SizedBox(
+                        width: 12,
+                        height: 12,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text('Loading...'),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        }
+        if (state is TeamLoaded) {
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: 4,
+            itemBuilder: (context, index) {
+              return Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                margin: const EdgeInsets.only(bottom: 12),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  leading: const Icon(Icons.sports_soccer, size: 32),
+                  title: Text(
+                    'Trận đấu giả định ${index + 1}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: const Text('API dữ liệu trận đấu'),
+                  trailing: const Text('20:00', style: TextStyle(fontWeight: FontWeight.w600)),
+                ),
+              );
+            },
+          );
+        }
+        return const Center(child: Text('Đã xảy ra lỗi'));
       },
     );
   }
@@ -139,6 +171,7 @@ class _DynamicTeamHeaderState extends State<_DynamicTeamHeader> {
   }
 
   Future<void> _extractColor() async {
+    if (widget.logoUrl.isEmpty) return;
     try {
       final palette = await PaletteGenerator.fromImageProvider(
         NetworkImage(widget.logoUrl),
@@ -164,15 +197,14 @@ class _DynamicTeamHeaderState extends State<_DynamicTeamHeader> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // Watermark background
-            Opacity(
-              opacity: 0.1,
-              child: Transform.scale(
-                scale: 3.0,
-                child: CustomImage(imageUrl: widget.logoUrl),
+            if (widget.logoUrl.isNotEmpty)
+              Opacity(
+                opacity: 0.1,
+                child: Transform.scale(
+                  scale: 3.0,
+                  child: CustomImage(imageUrl: widget.logoUrl),
+                ),
               ),
-            ),
-            // Gradient Overlay
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -185,7 +217,6 @@ class _DynamicTeamHeaderState extends State<_DynamicTeamHeader> {
                 ),
               ),
             ),
-            // Glassmorphism Content
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -207,11 +238,9 @@ class _DynamicTeamHeaderState extends State<_DynamicTeamHeader> {
                           )
                         ],
                       ),
-                      child: CustomImage(
-                        imageUrl: widget.logoUrl,
-                        width: 90,
-                        height: 90,
-                      ),
+                      child: widget.logoUrl.isNotEmpty
+                          ? CustomImage(imageUrl: widget.logoUrl, width: 90, height: 90)
+                          : const Icon(Icons.shield, size: 90, color: Colors.white),
                     ),
                   ),
                 ),

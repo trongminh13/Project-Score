@@ -34,6 +34,12 @@ class FixtureCard extends StatelessWidget {
     final isLive = soccerFixture.status.isLive;
     final goalsAvailable = homeTeam.score != -1 && awayTeam.score != -1;
 
+    final now = DateTime.now();
+    final isToday = soccerFixture.startTime != null &&
+        soccerFixture.startTime!.toLocal().year == now.year &&
+        soccerFixture.startTime!.toLocal().month == now.month &&
+        soccerFixture.startTime!.toLocal().day == now.day;
+
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: AppSpacing.s,
@@ -41,8 +47,30 @@ class FixtureCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colorsExt.surfaceElevated,
         borderRadius: AppBorderRadius.cardAll,
-        border: Border.all(color: context.colorsExt.dividerSubtle),
-        boxShadow: const [AppShadows.floatingShadow],
+        border: Border.all(
+          color: isLive 
+              ? context.colorsExt.red.withValues(alpha: 0.5)
+              : isToday 
+                  ? context.colors.primary.withValues(alpha: 0.5) 
+                  : context.colorsExt.dividerSubtle,
+          width: isLive || isToday ? 1.5 : 1.0,
+        ),
+        boxShadow: [
+          if (isLive)
+            BoxShadow(
+              color: context.colorsExt.red.withValues(alpha: 0.2),
+              blurRadius: 12,
+              spreadRadius: 2,
+            )
+          else if (isToday)
+            BoxShadow(
+              color: context.colors.primary.withValues(alpha: 0.2),
+              blurRadius: 12,
+              spreadRadius: 2,
+            )
+          else
+            AppShadows.floatingShadow,
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.l),

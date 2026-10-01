@@ -49,7 +49,7 @@ class StatsRow extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    home.name,
+                    context.translateStatName(home.name),
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(

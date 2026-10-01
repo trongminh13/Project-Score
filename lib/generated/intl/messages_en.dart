@@ -32,7 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "aggregateScore": m0,
     "all": MessageLookupByLibrary.simpleMessage("All"),
     "allLeaguesTooltip": MessageLookupByLibrary.simpleMessage("All leagues"),
-    "appName": MessageLookupByLibrary.simpleMessage("Live Score"),
+    "appName": MessageLookupByLibrary.simpleMessage("Score DV"),
     "appVersion": MessageLookupByLibrary.simpleMessage("App Version"),
     "appearance": MessageLookupByLibrary.simpleMessage("Appearance"),
     "appearanceDescription": MessageLookupByLibrary.simpleMessage(
@@ -41,6 +41,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "arabic": MessageLookupByLibrary.simpleMessage("Arabic"),
     "assist": MessageLookupByLibrary.simpleMessage("Assist"),
     "dark": MessageLookupByLibrary.simpleMessage("Dark"),
+    "discoverTopLeagues": MessageLookupByLibrary.simpleMessage(
+      "Discover Top Leagues",
+    ),
     "drawnShort": MessageLookupByLibrary.simpleMessage("D"),
     "english": MessageLookupByLibrary.simpleMessage("English"),
     "errorClientClosedRequest": MessageLookupByLibrary.simpleMessage(
@@ -65,6 +68,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Flutter Web needs a server-side proxy for this API.",
     ),
     "events": MessageLookupByLibrary.simpleMessage("Events"),
+    "exploreLeagues": MessageLookupByLibrary.simpleMessage("Explore Leagues"),
     "fixtures": MessageLookupByLibrary.simpleMessage("Fixtures"),
     "form": MessageLookupByLibrary.simpleMessage("Form"),
     "fullLineups": MessageLookupByLibrary.simpleMessage("Full Lineups"),
@@ -80,7 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lineups": MessageLookupByLibrary.simpleMessage("Lineups"),
     "liveFallback": MessageLookupByLibrary.simpleMessage("LIVE"),
     "liveFixtures": MessageLookupByLibrary.simpleMessage("Live Fixtures"),
-    "liveScore": MessageLookupByLibrary.simpleMessage("Live Score"),
+    "liveScore": MessageLookupByLibrary.simpleMessage("Score DV"),
     "lostShort": MessageLookupByLibrary.simpleMessage("L"),
     "noEvents": MessageLookupByLibrary.simpleMessage(
       "Events are not available yet",
@@ -111,9 +115,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "teamName": MessageLookupByLibrary.simpleMessage("Team"),
     "topStats": MessageLookupByLibrary.simpleMessage("Top Stats"),
     "versus": MessageLookupByLibrary.simpleMessage("vs"),
+    "vietnamese": MessageLookupByLibrary.simpleMessage("Vietnamese"),
     "viewAll": MessageLookupByLibrary.simpleMessage("View All"),
     "viewFixtures": MessageLookupByLibrary.simpleMessage("View Fixtures"),
     "viewStandings": MessageLookupByLibrary.simpleMessage("View Standings"),
+    "viewUpcoming": MessageLookupByLibrary.simpleMessage("View Upcoming"),
     "wonShort": MessageLookupByLibrary.simpleMessage("W"),
   };
 }

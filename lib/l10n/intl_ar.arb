@@ -31,6 +31,7 @@
   "languageDescription": "اختَر لغة التطبيق أو اجعله يتبع لغة الجهاز.",
   "english": "الإنجليزية",
   "arabic": "العربية",
+  "vietnamese": "الفيتنامية",
   "topStats": "أبرز الإحصائيات",
   "teamName": "الفريق",
   "form": "النتائج",
@@ -73,5 +74,7 @@
   "errorLoadStandings": "تعذر تحميل الترتيب حالياً.",
   "all": "الكل",
   "allLeaguesTooltip": "كل الدوريات",
-  "fullLineups": "التشكيل الكامل"
+  "fullLineups": "التشكيل الكامل",
+  "exploreLeagues": "استكشف الدوريات",
+  "viewUpcoming": "عرض القادمة"
 }

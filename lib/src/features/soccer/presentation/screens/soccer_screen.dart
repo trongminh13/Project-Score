@@ -17,6 +17,7 @@ import '../cubit/soccer/soccer_cubit.dart';
 import '../cubit/soccer/soccer_state.dart';
 import '../widgets/modal_sheet_content.dart';
 import '../widgets/view_fixtures.dart';
+import '../widgets/home_discover_dashboard.dart';
 
 class SoccerScreen extends StatefulWidget {
   const SoccerScreen({super.key});
@@ -201,7 +202,7 @@ class _ViewFixtures extends StatelessWidget {
                 ],
               ),
             SoccerTodayFixturesLoaded() =>
-              const AppEmptyWidget().animate().fade().scale(),
+              const HomeDiscoverDashboard().animate().fade().slideY(begin: 0.1),
             _ => const SizedBox.shrink(),
           },
     );

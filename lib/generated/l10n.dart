@@ -54,9 +54,9 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
-  /// `Live Score`
+  /// `Score DV`
   String get appName {
-    return Intl.message('Live Score', name: 'appName', desc: '', args: []);
+    return Intl.message('Score DV', name: 'appName', desc: '', args: []);
   }
 
   /// `No route found`
@@ -84,9 +84,9 @@ class S {
     return Intl.message('Standings', name: 'standings', desc: '', args: []);
   }
 
-  /// `Live Score`
+  /// `Score DV`
   String get liveScore {
-    return Intl.message('Live Score', name: 'liveScore', desc: '', args: []);
+    return Intl.message('Score DV', name: 'liveScore', desc: '', args: []);
   }
 
   /// `vs`
@@ -262,6 +262,11 @@ class S {
   /// `Arabic`
   String get arabic {
     return Intl.message('Arabic', name: 'arabic', desc: '', args: []);
+  }
+
+  /// `Vietnamese`
+  String get vietnamese {
+    return Intl.message('Vietnamese', name: 'vietnamese', desc: '', args: []);
   }
 
   /// `Top Stats`
@@ -463,6 +468,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Explore Leagues`
+  String get exploreLeagues {
+    return Intl.message(
+      'Explore Leagues',
+      name: 'exploreLeagues',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Upcoming`
+  String get viewUpcoming {
+    return Intl.message(
+      'View Upcoming',
+      name: 'viewUpcoming',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Discover Top Leagues`
+  String get discoverTopLeagues {
+    return Intl.message(
+      'Discover Top Leagues',
+      name: 'discoverTopLeagues',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
@@ -472,6 +507,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'en'),
       Locale.fromSubtags(languageCode: 'ar'),
+      Locale.fromSubtags(languageCode: 'vi'),
     ];
   }
 

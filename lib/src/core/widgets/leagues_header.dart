@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -15,7 +16,7 @@ final double _kCircleHeaderHeight = 68.0.h;
 final double _kLeagueAvatarRadius = 25.0.r;
 final double _kLeagueLogoSize = 25.0.w;
 
-class CircleLeaguesHeader extends StatelessWidget {
+class CircleLeaguesHeader extends StatefulWidget {
   final List<League> leagues;
   final void Function(BuildContext, League) onLeagueTap;
 
@@ -26,26 +27,78 @@ class CircleLeaguesHeader extends StatelessWidget {
   });
 
   @override
+  State<CircleLeaguesHeader> createState() => _CircleLeaguesHeaderState();
+}
+
+class _CircleLeaguesHeaderState extends State<CircleLeaguesHeader> {
+  final ScrollController _scrollController = ScrollController();
+  Timer? _scrollTimer;
+  bool _isUserScrolling = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.leagues.isNotEmpty) {
+      _startAutoScroll();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollTimer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoScroll() {
+    _scrollTimer?.cancel();
+    _scrollTimer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+      if (_scrollController.hasClients && !_isUserScrolling) {
+        _scrollController.jumpTo(_scrollController.offset + 1.0);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (widget.leagues.isEmpty) return const SizedBox.shrink();
+
     return Container(
       width: double.infinity,
       height: _kCircleHeaderHeight,
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
       padding: const EdgeInsetsDirectional.only(start: AppSpacing.l),
       decoration: BoxDecoration(
         gradient: context.colorsExt.accentGradient,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(40.r),
-          topLeft: Radius.circular(40.r),
+        borderRadius: BorderRadius.circular(40.r),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(40.r),
+        child: Listener(
+        onPointerDown: (_) => _isUserScrolling = true,
+        onPointerUp: (_) {
+          _isUserScrolling = false;
+        },
+        onPointerCancel: (_) {
+          _isUserScrolling = false;
+        },
+        child: ListView.builder(
+          controller: _scrollController,
+          physics: const BouncingScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            final realIndex = index % widget.leagues.length;
+            return Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.s),
+              child: _buildLeagueAvatar(
+                league: widget.leagues[realIndex], 
+                context: context, 
+                index: realIndex
+              ),
+            );
+          },
         ),
       ),
-      child: ListView.separated(
-        physics: const BouncingScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        itemBuilder:
-            (context, index) =>
-                _buildLeagueAvatar(league: leagues[index], context: context, index: index),
-        separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.s),
-        itemCount: leagues.length,
       ),
     );
   }
@@ -60,12 +113,12 @@ class CircleLeaguesHeader extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
-          onLeagueTap(context, league);
+          widget.onLeagueTap(context, league);
         },
         child: Container(
           width: _kLeagueAvatarRadius * 2,
           height: _kLeagueAvatarRadius * 2,
-          decoration: BoxDecoration(
+      decoration: BoxDecoration(
             color: league.color != null ? league.color!.toColor : context.colorsExt.white,
             shape: BoxShape.circle,
             border: Border.all(color: context.colorsExt.white.withValues(alpha: 0.8), width: 1.5),

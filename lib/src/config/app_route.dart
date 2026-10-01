@@ -1,3 +1,4 @@
+import '../core/domain/entities/teams.dart';
 import '../features/team/presentation/cubit/team_cubit.dart';
 import '../features/team/presentation/screens/team_details_screen.dart';
 import 'package:flutter/material.dart';
@@ -81,10 +82,13 @@ class AppRouter {
             path: Routes.teamDetails,
             pageBuilder: (context, state) {
               final id = int.parse(state.pathParameters['id'] ?? '0');
+              final team = state.extra as Team?;
               return NoTransitionPage(
                 child: BlocProvider(
                   create: (_) => sl<TeamCubit>()..getTeamDetails(id),
-                  child: TeamDetailsScreen(teamId: id),
+                  child: TeamDetailsScreen(
+                    team: team ?? Team(id: id, name: 'Team $id', logo: ''),
+                  ),
                 ),
               );
             },

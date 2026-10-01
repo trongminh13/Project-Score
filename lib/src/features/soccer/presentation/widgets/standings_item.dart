@@ -49,7 +49,10 @@ class StandingsItem extends StatelessWidget {
               : Colors.transparent,
           child: InkWell(
             onTap: () {
-              context.push(Routes.teamDetails.replaceFirst(':id', teamRank.team.id.toString()));
+              context.push(
+                Routes.teamDetails.replaceFirst(':id', teamRank.team.id.toString()),
+                extra: teamRank.team,
+              );
             },
             hoverColor: context.colorsExt.surfaceGlass,
             child: Container(

@@ -33,11 +33,13 @@ class FixtureCardItem extends GroupedFixtureItem {
 class GroupedFixturesList extends StatefulWidget {
   final List<SoccerFixture> fixtures;
   final bool showLeagueLogo;
+  final Widget? bottomWidget;
 
   const GroupedFixturesList({
     super.key,
     required this.fixtures,
-    this.showLeagueLogo = true,
+    this.showLeagueLogo = false,
+    this.bottomWidget,
   });
 
   @override
@@ -172,11 +174,15 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
   }
 
   Widget _buildDateGroupedList(BuildContext context) {
+    final itemCount = _groupedItems.length + (widget.bottomWidget != null ? 1 : 0);
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 120),
-      itemCount: _groupedItems.length,
+      itemCount: itemCount,
       itemBuilder: (context, index) {
+        if (index == _groupedItems.length) {
+          return widget.bottomWidget!;
+        }
         final item = _groupedItems[index];
         final widgetItem = switch (item) {
           FixtureHeaderItem(date: final date) => Padding(
@@ -245,6 +251,10 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
               ),
               const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
             ],
+          ),
+        if (widget.bottomWidget != null)
+          SliverToBoxAdapter(
+            child: widget.bottomWidget!,
           ),
         const SliverToBoxAdapter(
           child: SizedBox(height: 120), // Bottom padding

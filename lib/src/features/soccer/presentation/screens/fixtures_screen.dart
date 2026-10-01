@@ -14,6 +14,8 @@ import '../cubit/leagues/leagues_cubit.dart';
 import '../cubit/soccer/soccer_cubit.dart';
 import '../cubit/soccer/soccer_state.dart';
 import '../widgets/grouped_fixtures_list.dart';
+import '../widgets/explore_leagues_widget.dart';
+
 
 class FixturesScreen extends StatefulWidget {
   const FixturesScreen({super.key, this.competitionId});
@@ -34,6 +36,20 @@ class _FixturesScreenState extends State<FixturesScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchFixtures();
     });
+  }
+
+  void _onExploreLeagueTap(int leagueId) {
+    setState(() {
+      initialSelectedLeagueId = leagueId;
+    });
+    context.read<SoccerCubit>().getCurrentRoundFixtures(competitionId: leagueId);
+  }
+
+  void _onPrefixIconTap() {
+    setState(() {
+      initialSelectedLeagueId = null;
+    });
+    context.read<SoccerCubit>().getTodayFixtures();
   }
 
   void _fetchFixtures() {
@@ -114,7 +130,21 @@ class _FixturesScreenState extends State<FixturesScreen> {
       SoccerCurrentRoundFixturesLoaded(fixtures: final f) when f.isNotEmpty =>
         GroupedFixturesList(fixtures: f, showLeagueLogo: true),
       SoccerTodayFixturesLoaded(todayFixtures: final f) when f.isNotEmpty =>
-        GroupedFixturesList(fixtures: f, showLeagueLogo: true),
+        GroupedFixturesList(
+          fixtures: f, 
+          showLeagueLogo: true,
+          bottomWidget: ExploreLeaguesWidget(
+            onLeagueTap: _onExploreLeagueTap, 
+            isScrollable: false,
+            showEmptyMessage: false,
+          ),
+        ),
+      SoccerTodayFixturesLoaded(todayFixtures: final f) when f.isEmpty =>
+        ExploreLeaguesWidget(
+          onLeagueTap: _onExploreLeagueTap, 
+          isScrollable: true,
+          showEmptyMessage: true,
+        ),
       SoccerCurrentRoundFixturesLoadFailure() ||
       SoccerTodayFixturesLoadFailure() => Center(
         child: AppEmptyWidget(message: context.l10n.errorLoadFixtures),
@@ -137,11 +167,11 @@ class _FixturesHeader extends StatelessWidget {
     return RectLeaguesHeader(
       leagues: leagues,
       onLeagueTap: (league) {
-        context.read<SoccerCubit>().getCurrentRoundFixtures(competitionId: league.id);
+        screen?._onExploreLeagueTap(league.id);
       },
       initialSelectedLeagueId: screen?.initialSelectedLeagueId,
       prefixIcon: const _AllLeaguesPrefixIcon(),
-      onPrefixIconTap: context.read<SoccerCubit>().getTodayFixtures,
+      onPrefixIconTap: screen?._onPrefixIconTap,
     );
   }
 }

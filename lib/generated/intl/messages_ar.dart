@@ -65,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "نسخة الويب من Flutter تحتاج إلى Proxy للخادم لهذا الـ API.",
     ),
     "events": MessageLookupByLibrary.simpleMessage("الأحداث"),
+    "exploreLeagues": MessageLookupByLibrary.simpleMessage("استكشف الدوريات"),
     "fixtures": MessageLookupByLibrary.simpleMessage("المباريات"),
     "form": MessageLookupByLibrary.simpleMessage("النتائج"),
     "fullLineups": MessageLookupByLibrary.simpleMessage("التشكيل الكامل"),
@@ -109,9 +110,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "teamName": MessageLookupByLibrary.simpleMessage("الفريق"),
     "topStats": MessageLookupByLibrary.simpleMessage("أبرز الإحصائيات"),
     "versus": MessageLookupByLibrary.simpleMessage("ضد"),
+    "vietnamese": MessageLookupByLibrary.simpleMessage("الفيتنامية"),
     "viewAll": MessageLookupByLibrary.simpleMessage("عرض الكل"),
     "viewFixtures": MessageLookupByLibrary.simpleMessage("عرض المباريات"),
     "viewStandings": MessageLookupByLibrary.simpleMessage("عرض الترتيب"),
+    "viewUpcoming": MessageLookupByLibrary.simpleMessage("عرض القادمة"),
     "wonShort": MessageLookupByLibrary.simpleMessage("ف"),
   };
 }

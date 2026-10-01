@@ -1,0 +1,81 @@
+{
+  "@@locale": "vi",
+  "appName": "Score DV",
+  "noRouteFound": "Không tìm thấy trang",
+  "home": "Trang chủ",
+  "fixtures": "Lịch thi đấu",
+  "standings": "Bảng xếp hạng",
+  "liveScore": "Score DV",
+  "versus": "vs",
+  "statistics": "Thống kê",
+  "lineups": "Đội hình",
+  "events": "Sự kiện",
+  "assist": "Kiến tạo",
+  "viewFixtures": "Xem lịch thi đấu",
+  "viewStandings": "Xem bảng xếp hạng",
+  "liveFixtures": "Đang diễn ra",
+  "viewAll": "Xem tất cả",
+  "reload": "Tải lại",
+  "noStats": "Thống kê chưa có sẵn",
+  "noLineups": "Đội hình chưa có sẵn",
+  "noEvents": "Sự kiện chưa có sẵn",
+  "noFixtures": "Không có trận đấu nào hôm nay",
+  "settings": "Cài đặt",
+  "appearance": "Giao diện",
+  "appearanceDescription": "Tùy chỉnh giao diện hiển thị của ứng dụng.",
+  "appVersion": "Phiên bản",
+  "systemDefault": "Mặc định hệ thống",
+  "light": "Sáng",
+  "dark": "Tối",
+  "language": "Ngôn ngữ",
+  "languageDescription": "Chọn ngôn ngữ hiển thị của ứng dụng.",
+  "english": "Tiếng Anh",
+  "arabic": "Tiếng Ả Rập",
+  "vietnamese": "Tiếng Việt",
+  "topStats": "Chỉ số nổi bật",
+  "teamName": "Đội",
+  "form": "Phong độ",
+  "playedShort": "ST",
+  "wonShort": "T",
+  "drawnShort": "H",
+  "lostShort": "B",
+  "goalsForShort": "BT",
+  "goalsAgainstShort": "SBT",
+  "goalDifferenceShort": "HS",
+  "pointsShort": "Đ",
+  "tbd": "TBD",
+  "liveFallback": "TRỰC TIẾP",
+  "aggregateScore": "Tổng tỉ số ({homeScore} - {awayScore})",
+  "@aggregateScore": {
+    "placeholders": {
+      "homeScore": {},
+      "awayScore": {}
+    }
+  },
+  "roundNumber": "Vòng {number}",
+  "@roundNumber": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "seasonNumber": "Mùa giải {number}",
+  "@seasonNumber": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "errorClientClosedRequest": "Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại.",
+  "errorInternalServerError": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+  "errorNetworkConnectError": "Kết nối thất bại. Vui lòng kiểm tra mạng và thử lại.",
+  "errorWebProxyRequired": "Flutter Web yêu cầu máy chủ proxy cho API này.",
+  "errorUnexpected": "Đã xảy ra lỗi không xác định.",
+  "errorLoadFixtures": "Không thể tải lịch thi đấu lúc này.",
+  "noStandingsYet": "Bảng xếp hạng chưa có sẵn.",
+  "errorLoadStandings": "Không thể tải bảng xếp hạng lúc này.",
+  "all": "Tất cả",
+  "allLeaguesTooltip": "Tất cả các giải đấu",
+  "fullLineups": "Đội hình chi tiết",
+  "exploreLeagues": "Khám phá giải đấu",
+  "viewUpcoming": "Xem vòng đấu tới",
+  "discoverTopLeagues": "Khám phá giải đấu hàng đầu"
+}

@@ -35,6 +35,50 @@ extension ContextExtension on BuildContext {
 
   /// Current locale's language code (e.g., `'en'` or `'ar'`).
   String get localeName => Localizations.localeOf(this).languageCode;
+  /// Translate dynamic stat names and category names from API to local language.
+  String translateStatName(String englishName) {
+    if (localeName != 'vi') return englishName;
+
+    final lower = englishName.toLowerCase().trim();
+    return switch (lower) {
+      // Categories
+      'shots' => 'Cú sút',
+      'passes' => 'Chuyền bóng',
+      'discipline' => 'Kỷ luật',
+      'defense' => 'Phòng ngự',
+      'duels' => 'Tranh chấp',
+      'attacks' => 'Tấn công',
+      'general' => 'Tổng quan',
+      
+      // Specific Stats
+      'ball possession' || 'possession' => 'Kiểm soát bóng',
+      'expected goals' || 'expected goals (xg)' || 'xg' => 'Bàn thắng kỳ vọng (xG)',
+      'total shots' => 'Tổng cú sút',
+      'shots on target' => 'Sút trúng đích',
+      'shots off target' => 'Sút chệch cột',
+      'blocked shots' => 'Sút bị chặn',
+      'corner kicks' || 'corners' => 'Phạt góc',
+      'offsides' => 'Việt vị',
+      'fouls' => 'Phạm lỗi',
+      'yellow cards' => 'Thẻ vàng',
+      'red cards' => 'Thẻ đỏ',
+      'goalkeeper saves' || 'saves' => 'Cứu thua',
+      'total passes' => 'Đường chuyền',
+      'accurate passes' => 'Chuyền chính xác',
+      'accurate passes %' => 'Tỷ lệ chuyền chính xác',
+      'big chances' => 'Cơ hội rõ rệt',
+      'hit woodwork' => 'Chạm khung gỗ',
+      'dangerous attacks' => 'Tấn công nguy hiểm',
+      'throw-ins' => 'Ném biên',
+      'crosses' => 'Tạt bóng',
+      'tackles' => 'Tắc bóng',
+      'interceptions' => 'Cắt bóng',
+      'clearances' => 'Phá bóng',
+      'free kicks' => 'Đá phạt',
+      'goal kicks' => 'Phát bóng',
+      _ => englishName,
+    };
+  }
 }
 
 /// Helper extensions on the generated [S] class.
@@ -61,6 +105,7 @@ extension AppL10nHelpers on S {
       AppLanguage.system => systemDefault,
       AppLanguage.english => english,
       AppLanguage.arabic => arabic,
+      AppLanguage.vietnamese => vietnamese,
     };
   }
 

@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 enum AppLanguage {
   system('system'),
   english('en'),
-  arabic('ar');
+  arabic('ar'),
+  vietnamese('vi');
 
   const AppLanguage(this.storageValue);
 
@@ -23,6 +24,7 @@ enum AppLanguage {
       AppLanguage.system => null,
       AppLanguage.english => const Locale('en'),
       AppLanguage.arabic => const Locale('ar'),
+      AppLanguage.vietnamese => const Locale('vi'),
     };
   }
 
@@ -32,8 +34,10 @@ enum AppLanguage {
     }
 
     final Locale locale = deviceLocale ?? ui.PlatformDispatcher.instance.locale;
-    return locale.languageCode.toLowerCase() == 'ar'
-        ? const Locale('ar')
-        : const Locale('en');
+    final String languageCode = locale.languageCode.toLowerCase();
+    
+    if (languageCode == 'ar') return const Locale('ar');
+    if (languageCode == 'vi') return const Locale('vi');
+    return const Locale('en');
   }
 }

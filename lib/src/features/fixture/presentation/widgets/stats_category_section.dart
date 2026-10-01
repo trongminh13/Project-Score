@@ -24,7 +24,7 @@ class StatsCategorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = isTop ? context.l10n.topStats : categoryName;
+    final title = isTop ? context.l10n.topStats : context.translateStatName(categoryName);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
