@@ -8,12 +8,12 @@ import 'package:live_score/src/core/extensions/context_ext.dart';
 class PromoBannerData {
   final String title;
   final String subtitle;
-  final List<Color> gradientColors;
+  final String imagePath;
 
   const PromoBannerData({
     required this.title,
     required this.subtitle,
-    required this.gradientColors,
+    required this.imagePath,
   });
 }
 
@@ -34,17 +34,17 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
     PromoBannerData(
       title: 'Nâng cấp Premium',
       subtitle: 'Trải nghiệm không giới hạn, xoá bỏ hoàn toàn quảng cáo.',
-      gradientColors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)], // Purple gradient
+      imagePath: 'assets/images/banners/jannes_glas.jpg',
     ),
     PromoBannerData(
       title: 'Siêu kinh điển cuối tuần',
       subtitle: 'Đừng bỏ lỡ trận đấu nảy lửa giữa Real Madrid & Barcelona.',
-      gradientColors: [Color(0xFFff9966), Color(0xFFff5e62)], // Orange/Red gradient
+      imagePath: 'assets/images/banners/mario_klassen.jpg',
     ),
     PromoBannerData(
       title: 'Cá nhân hoá trải nghiệm',
       subtitle: 'Theo dõi đội bóng yêu thích để nhận thông báo sớm nhất.',
-      gradientColors: [Color(0xFF00B4DB), Color(0xFF0083B0)], // Blue gradient
+      imagePath: 'assets/images/banners/abigail_keenan.jpg',
     ),
   ];
 
@@ -113,42 +113,54 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: AppBorderRadius.largeAll,
-                      gradient: LinearGradient(
-                        colors: banner.gradientColors,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                      image: DecorationImage(
+                        image: AssetImage(banner.imagePath),
+                        fit: BoxFit.cover,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: banner.gradientColors.last.withValues(alpha: 0.3),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
                       ],
                     ),
-                    padding: const EdgeInsets.all(AppSpacing.l),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          banner.title,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.l),
+                      decoration: BoxDecoration(
+                        borderRadius: AppBorderRadius.largeAll,
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withValues(alpha: 0.8),
+                            Colors.black.withValues(alpha: 0.2),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
                         ),
-                        const SizedBox(height: AppSpacing.s),
-                        Text(
-                          banner.subtitle,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            height: 1.4,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            banner.title,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                          const SizedBox(height: AppSpacing.s),
+                          Text(
+                            banner.subtitle,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              height: 1.4,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
