@@ -25,12 +25,13 @@ class SoccerFixtureModel extends SoccerFixture {
     Map<String, dynamic> json, {
     required League fixtureLeague,
   }) {
-    String status = json['statusText'] ?? '';
-    if (status == 'Ended') status = 'Kết thúc';
-    if (status == 'Scheduled') status = 'Sắp diễn ra';
-    if (status == 'Postponed') status = 'Hoãn';
-    if (status == 'Canceled') status = 'Hủy';
-    if (status == 'Halftime') status = 'Nghỉ giữa hiệp';
+    String status = (json['statusText'] as String?)?.trim() ?? '';
+    final lowerStatus = status.toLowerCase();
+    if (lowerStatus == 'ended') status = 'Kết thúc';
+    else if (lowerStatus == 'scheduled') status = 'Sắp diễn ra';
+    else if (lowerStatus == 'postponed') status = 'Hoãn';
+    else if (lowerStatus == 'canceled' || lowerStatus == 'cancelled') status = 'Hủy';
+    else if (lowerStatus == 'halftime') status = 'Nghỉ giữa hiệp';
     
     return SoccerFixtureModel(
       id: json['id'],

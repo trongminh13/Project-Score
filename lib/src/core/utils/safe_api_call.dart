@@ -27,6 +27,8 @@ Future<Either<Failure, T>> safeApiCall<T>(
       return Right(result);
     } on DioException catch (error) {
       return Left(ErrorHandler.handle(error).failure);
+    } catch (e) {
+      return Left(Failure(code: 999, message: 'Lỗi xử lý dữ liệu: $e'));
     }
   } else {
     return Left(DataSource.networkConnectError.getFailure());

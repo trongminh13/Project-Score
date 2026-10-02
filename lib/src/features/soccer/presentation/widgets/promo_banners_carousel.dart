@@ -84,7 +84,7 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: 140,
+          height: 160,
           child: Listener(
             onPointerDown: (_) {
               _isUserInteracting = true;
@@ -150,7 +150,8 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
                             ),
                           ),
                           const SizedBox(height: AppSpacing.s),
-                          Text(
+                          Expanded(
+                            child: Text(
                             banner.subtitle,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.white.withValues(alpha: 0.9),
@@ -158,6 +159,7 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                          ),
                           ),
                         ],
                       ),

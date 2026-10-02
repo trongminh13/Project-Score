@@ -110,14 +110,14 @@ class SoccerDataSourceImpl implements SoccerDataSource {
   Future<List<SoccerFixtureModel>> getTeamFixtures({required int teamId}) async {
     try {
       final response = await apiClient.get(
-        url: Endpoints.todayFixtures,
+        url: Endpoints.fixtures,
         queryParams: {
           'competitors': teamId,
           'sports': 1,
         },
       );
       // Only keep fixtures that have the team
-      final fixtures = _parseFixtures(response, allowedCompetitionIds: _availableLeagueIds);
+      final fixtures = _parseFixtures(response, allowedCompetitionIds: null);
       return fixtures;
     } catch (error) {
       rethrow;
@@ -144,7 +144,7 @@ class SoccerDataSourceImpl implements SoccerDataSource {
 
   List<SoccerFixtureModel> _parseFixtures(
     Response response, {
-    required Set<int> allowedCompetitionIds,
+    Set<int>? allowedCompetitionIds,
   }) {
     final result = response.data['games'] as List<dynamic>? ?? const [];
     return result
@@ -153,7 +153,7 @@ class SoccerDataSourceImpl implements SoccerDataSource {
         .where((fixture) {
           final competitionId = (fixture['competitionId'] as num?)?.toInt();
           return competitionId != null &&
-              allowedCompetitionIds.contains(competitionId);
+              (allowedCompetitionIds == null || allowedCompetitionIds.contains(competitionId));
         })
         .map(_buildFixtureModel)
         .toList();

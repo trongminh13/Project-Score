@@ -141,13 +141,15 @@ class _LeagueHeader extends StatelessWidget {
         ),
         const SizedBox(width: AppSpacing.m),
         Expanded(
-          child: Text(
-            league.name,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: context.colorsExt.white,
-              fontWeight: FontWeight.bold,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              league.name,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: context.colorsExt.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),

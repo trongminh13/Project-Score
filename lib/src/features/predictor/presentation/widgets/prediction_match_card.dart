@@ -75,11 +75,11 @@ class PredictionMatchCard extends StatelessWidget {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildButton(context, PickOption.home, match.homeTeamName, match.homeTeamShortName, match.homeTeamLogo, isLocked),
+                      _buildButton(context, PickOption.home, match.homeTeamShortName, match.homeTeamShortName, match.homeTeamLogo, isLocked),
                       const SizedBox(height: AppSpacing.s),
                       _buildButton(context, PickOption.draw, 'Hòa', 'X', null, isLocked),
                       const SizedBox(height: AppSpacing.s),
-                      _buildButton(context, PickOption.away, match.awayTeamName, match.awayTeamShortName, match.awayTeamLogo, isLocked),
+                      _buildButton(context, PickOption.away, match.awayTeamShortName, match.awayTeamShortName, match.awayTeamLogo, isLocked),
                     ],
                   )
                 : IntrinsicHeight(
@@ -87,18 +87,18 @@ class PredictionMatchCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                       Expanded(
-                        flex: 3,
-                        child: _buildButton(context, PickOption.home, match.homeTeamName, match.homeTeamShortName, match.homeTeamLogo, isLocked),
+                        flex: 1,
+                        child: _buildButton(context, PickOption.home, match.homeTeamShortName, match.homeTeamShortName, match.homeTeamLogo, isLocked),
                       ),
                       const SizedBox(width: AppSpacing.s),
                       Expanded(
-                        flex: 2,
+                        flex: 1,
                         child: _buildButton(context, PickOption.draw, 'Hòa', 'X', null, isLocked),
                       ),
                       const SizedBox(width: AppSpacing.s),
                       Expanded(
-                        flex: 3,
-                        child: _buildButton(context, PickOption.away, match.awayTeamName, match.awayTeamShortName, match.awayTeamLogo, isLocked),
+                        flex: 1,
+                        child: _buildButton(context, PickOption.away, match.awayTeamShortName, match.awayTeamShortName, match.awayTeamLogo, isLocked),
                       ),
                       ],
                     ),
@@ -197,6 +197,7 @@ class PredictionMatchCard extends StatelessWidget {
     String? logoUrl,
     bool isLocked,
   ) {
+    final isPending = syncStatus == SyncStatus.pending;
     final isSelected = selectedPick == option;
     
     Color bgColor = context.colorsExt.surfaceElevated;
@@ -213,7 +214,7 @@ class PredictionMatchCard extends StatelessWidget {
     }
 
     return InkWell(
-      onTap: isLocked ? null : () => onPick(option),
+      onTap: (isLocked || isPending) ? null : () => onPick(option),
       borderRadius: AppBorderRadius.mediumAll,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
