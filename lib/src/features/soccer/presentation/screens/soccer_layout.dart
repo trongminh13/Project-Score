@@ -25,7 +25,8 @@ class SoccerLayout extends StatelessWidget {
       Routes.soccer => 0,
       Routes.fixtures => 1,
       Routes.standings => 2,
-      Routes.favorites => 3,
+      Routes.predictor => 3,
+      Routes.favorites => 4,
       _ => 0,
     };
 
@@ -71,6 +72,11 @@ class SoccerLayout extends StatelessWidget {
                   label: Text(l10n.standings),
                 ),
                 NavigationRailDestination(
+                  icon: const Icon(Icons.sports_esports_outlined),
+                  selectedIcon: const Icon(Icons.sports_esports),
+                  label: const Text('Dự đoán'),
+                ),
+                NavigationRailDestination(
                   icon: const Icon(Icons.star_border_rounded),
                   selectedIcon: const Icon(Icons.star_rounded),
                   label: const Text('Favorites'),
@@ -96,7 +102,8 @@ class SoccerLayout extends StatelessWidget {
     0 => context.go(Routes.soccer),
     1 => context.go(Routes.fixtures),
     2 => context.go(Routes.standings),
-    3 => context.go(Routes.favorites),
+    3 => context.go(Routes.predictor),
+    4 => context.go(Routes.favorites),
     _ => null,
   };
 }
@@ -168,11 +175,18 @@ class _FloatingBottomNav extends StatelessWidget {
                     onTap: () => onTap(2),
                   ),
                   _NavItem(
+                    icon: Icons.sports_esports_outlined,
+                    activeIcon: Icons.sports_esports,
+                    label: 'Dự đoán',
+                    isSelected: currentIndex == 3,
+                    onTap: () => onTap(3),
+                  ),
+                  _NavItem(
                     icon: Icons.star_border_rounded,
                     activeIcon: Icons.star_rounded,
                     label: 'Yêu thích',
-                    isSelected: currentIndex == 3,
-                    onTap: () => onTap(3),
+                    isSelected: currentIndex == 4,
+                    onTap: () => onTap(4),
                   ),
                 ],
               ),
@@ -207,7 +221,7 @@ class _NavItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? context.colors.primary.withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),

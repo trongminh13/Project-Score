@@ -16,6 +16,7 @@ import 'features/settings/settings_injector.dart';
 import 'features/team/team_injector.dart';
 import 'features/soccer/soccer_injector.dart';
 import 'features/favorites/favorites_injector.dart';
+import 'features/predictor/predictor_injector.dart';
 
 final sl = GetIt.instance;
 
@@ -26,6 +27,7 @@ Future<void> initApp() async {
   initSoccer();
   initFixture();
   initFavorites();
+  initPredictor();
 }
 
 Future<void> initCore() async {

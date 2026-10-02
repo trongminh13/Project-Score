@@ -4,6 +4,8 @@ import '../features/team/presentation/screens/team_details_screen.dart';
 import 'package:flutter/material.dart';
 import '../features/favorites/presentation/cubit/favorites_cubit.dart';
 import '../features/favorites/presentation/screens/favorites_screen.dart';
+import '../features/predictor/presentation/cubit/predictor_round_cubit.dart';
+import '../features/predictor/presentation/screens/predictor_main_screen.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +31,7 @@ class Routes {
   static const String fixtureDetails = '/fixture_details';
   static const String settings = '/settings';
   static const String favorites = '/favorites';
+  static const String predictor = '/predictor';
   static const String teamDetails = '/team_details/:id';
 }
 
@@ -45,6 +48,7 @@ class AppRouter {
               ),
               BlocProvider(create: (context) => sl<SoccerCubit>()),
               BlocProvider(create: (context) => sl<FavoritesCubit>()..loadFavorites()),
+              BlocProvider(create: (context) => sl<PredictorRoundCubit>()..loadCurrentRound()),
             ],
             child: SoccerLayout(child: child),
           );
@@ -70,6 +74,12 @@ class AppRouter {
               return NoTransitionPage(
                 child: StandingsScreen(competitionId: state.extra as int?),
               );
+            },
+          ),
+          GoRoute(
+            path: Routes.predictor,
+            pageBuilder: (context, state) {
+              return const NoTransitionPage(child: PredictorMainScreen());
             },
           ),
           GoRoute(
