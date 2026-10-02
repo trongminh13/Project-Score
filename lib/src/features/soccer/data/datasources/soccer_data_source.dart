@@ -109,16 +109,26 @@ class SoccerDataSourceImpl implements SoccerDataSource {
   @override
   Future<List<SoccerFixtureModel>> getTeamFixtures({required int teamId}) async {
     try {
-      final response = await apiClient.get(
+      final responseFixtures = await apiClient.get(
         url: Endpoints.fixtures,
-        queryParams: {
-          'competitors': teamId,
-          'sports': 1,
-        },
+        queryParams: {'competitors': teamId},
       );
-      // Only keep fixtures that have the team
-      final fixtures = _parseFixtures(response, allowedCompetitionIds: null);
-      return fixtures;
+      
+      final responseResults = await apiClient.get(
+        url: '/games/results/',
+        queryParams: {'competitors': teamId},
+      );
+
+      final upcoming = _parseFixtures(responseFixtures, allowedCompetitionIds: null);
+      final past = _parseFixtures(responseResults, allowedCompetitionIds: null);
+      
+      final allMatches = [...past, ...upcoming];
+      allMatches.sort((a, b) {
+        final dateA = a.startTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final dateB = b.startTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return dateB.compareTo(dateA); // newest first
+      });
+      return allMatches;
     } catch (error) {
       rethrow;
     }
