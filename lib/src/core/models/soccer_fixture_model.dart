@@ -24,19 +24,28 @@ class SoccerFixtureModel extends SoccerFixture {
   factory SoccerFixtureModel.fromJson(
     Map<String, dynamic> json, {
     required League fixtureLeague,
-  }) => SoccerFixtureModel(
-    id: json['id'],
-    teams: TeamsModel.fromJson(json).toDomain(),
-    fixtureLeague: fixtureLeague,
-    statusText: json['statusText'],
-    gameTimeAndStatusDisplayType:
-        (json['gameTimeAndStatusDisplayType'] as num).toInt(),
-    startTime: DateTime.parse(json['startTime']),
-    gameTime: (json['gameTime'] as num?)?.toInt(),
-    addedTime: (json['addedTime'] as num?)?.toInt(),
-    gameTimeDisplay: json['gameTimeDisplay'] ?? '',
-    roundNum: json['roundNum'],
-    stageNum: json['stageNum'],
-    seasonNum: json['seasonNum'],
-  );
+  }) {
+    String status = json['statusText'] ?? '';
+    if (status == 'Ended') status = 'Kết thúc';
+    if (status == 'Scheduled') status = 'Sắp diễn ra';
+    if (status == 'Postponed') status = 'Hoãn';
+    if (status == 'Canceled') status = 'Hủy';
+    if (status == 'Halftime') status = 'Nghỉ giữa hiệp';
+    
+    return SoccerFixtureModel(
+      id: json['id'],
+      teams: TeamsModel.fromJson(json).toDomain(),
+      fixtureLeague: fixtureLeague,
+      statusText: status,
+      gameTimeAndStatusDisplayType:
+          (json['gameTimeAndStatusDisplayType'] as num).toInt(),
+      startTime: DateTime.parse(json['startTime']),
+      gameTime: (json['gameTime'] as num?)?.toInt(),
+      addedTime: (json['addedTime'] as num?)?.toInt(),
+      gameTimeDisplay: json['gameTimeDisplay'] ?? '',
+      roundNum: json['roundNum'],
+      stageNum: json['stageNum'],
+      seasonNum: json['seasonNum'],
+    );
+  }
 }
