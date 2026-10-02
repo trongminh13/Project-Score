@@ -7,6 +7,7 @@ import '../../domain/entities/predictor_pick.dart';
 import '../cubit/predictor_round_cubit.dart';
 import '../cubit/predictor_round_state.dart';
 import '../widgets/prediction_match_card.dart';
+import '../widgets/prediction_code_ticket.dart';
 
 class PredictorPredictView extends StatefulWidget {
   const PredictorPredictView({super.key});
@@ -142,10 +143,16 @@ class _PredictorPredictViewState extends State<PredictorPredictView> {
     final allPicked = state.round.userPicks.length == state.round.matches.length;
     final isSubmitted = state.round.isSubmitted;
     
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.xxl, top: AppSpacing.m),
-      child: ElevatedButton(
-        onPressed: (allPicked && !isSubmitted) 
+    return Column(
+      children: [
+        PredictionCodeTicket(
+          matches: state.round.matches,
+          userPicks: state.round.userPicks,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.xxl, top: AppSpacing.m),
+          child: ElevatedButton(
+            onPressed: (allPicked && !isSubmitted) 
             ? () {
                 context.read<PredictorRoundCubit>().submitRound();
               }
@@ -161,8 +168,10 @@ class _PredictorPredictViewState extends State<PredictorPredictView> {
               ? 'Đã chốt (${state.round.userPicks.length}/${state.round.matches.length})' 
               : (allPicked ? 'Chốt dự đoán' : 'Vui lòng dự đoán đủ các trận'),
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
         ),
       ),
+      ],
     );
   }
 }
