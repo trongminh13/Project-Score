@@ -5,6 +5,7 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/widgets/custom_image.dart';
 import '../../../../core/domain/entities/teams.dart';
+import '../../../soccer/presentation/widgets/fixture_card.dart';
 import '../cubit/team_cubit.dart';
 import '../cubit/team_state.dart';
 
@@ -94,24 +95,17 @@ class TeamDetailsScreen extends StatelessWidget {
           );
         }
         if (state is TeamLoaded) {
+          final fixtures = state.teamDetails.fixtures;
+          if (fixtures.isEmpty) {
+            return const Center(child: Text('Không có lịch thi đấu nào.'));
+          }
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: 4,
+            itemCount: fixtures.length,
             itemBuilder: (context, index) {
-              return Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: const Icon(Icons.sports_soccer, size: 32),
-                  title: Text(
-                    'Trận đấu giả định ${index + 1}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: const Text('API dữ liệu trận đấu'),
-                  trailing: const Text('20:00', style: TextStyle(fontWeight: FontWeight.w600)),
-                ),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: FixtureCard(soccerFixture: fixtures[index]),
               );
             },
           );

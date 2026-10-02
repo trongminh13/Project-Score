@@ -21,6 +21,8 @@ abstract class SoccerDataSource {
 
   Future<List<SoccerFixtureModel>> getTodayFixtures();
 
+  Future<List<SoccerFixtureModel>> getTeamFixtures({required int teamId});
+
   Future<StandingsModel> getStandings({required StandingsParams params});
 }
 
@@ -98,6 +100,25 @@ class SoccerDataSourceImpl implements SoccerDataSource {
         response,
         allowedCompetitionIds: _availableLeagueIds,
       );
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+
+  @override
+  Future<List<SoccerFixtureModel>> getTeamFixtures({required int teamId}) async {
+    try {
+      final response = await apiClient.get(
+        url: Endpoints.todayFixtures,
+        queryParams: {
+          'competitors': teamId,
+          'sports': 1,
+        },
+      );
+      // Only keep fixtures that have the team
+      final fixtures = _parseFixtures(response, allowedCompetitionIds: _availableLeagueIds);
+      return fixtures;
     } catch (error) {
       rethrow;
     }

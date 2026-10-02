@@ -11,5 +11,5 @@ void initTeam() {
   sl.registerLazySingleton<TeamRepository>(
     () => TeamRepositoryImpl(remoteDataSource: sl()),
   );
-  sl.registerFactory(() => TeamCubit(repository: sl()));
+  sl.registerFactory(() => TeamCubit(teamRepository: sl(), soccerRepository: sl()));
 }

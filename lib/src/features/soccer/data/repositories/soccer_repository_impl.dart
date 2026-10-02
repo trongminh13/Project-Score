@@ -48,6 +48,15 @@ class SoccerRepositoryImpl implements SoccerRepository {
     });
   }
 
+
+  @override
+  Future<Either<Failure, List<SoccerFixture>>> getTeamFixtures({required int teamId}) {
+    return safeApiCall(networkInfo, () async {
+      final result = await soccerDataSource.getTeamFixtures(teamId: teamId);
+      return result.map((fixture) => fixture.toDomain()).toList();
+    });
+  }
+
   @override
   Future<Either<Failure, Standings>> getStandings({
     required StandingsParams params,
