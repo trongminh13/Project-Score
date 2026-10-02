@@ -40,8 +40,15 @@ class PredictorRoundCubit extends Cubit<PredictorRoundState> {
       return;
     }
 
+    final isTogglingOff = currentRound.userPicks[matchId] == option;
+    final PickOption? newOption = isTogglingOff ? null : option;
+
     final newUserPicks = Map<String, PickOption>.from(currentRound.userPicks);
-    newUserPicks[matchId] = option;
+    if (newOption == null) {
+      newUserPicks.remove(matchId);
+    } else {
+      newUserPicks[matchId] = newOption;
+    }
     
     final newStatuses = Map<String, SyncStatus>.from(currentState.syncStatuses);
     newStatuses[matchId] = SyncStatus.pending;
@@ -53,7 +60,7 @@ class PredictorRoundCubit extends Cubit<PredictorRoundState> {
     ));
 
     try {
-      await repository.savePick(currentRound.id, matchId, option);
+      await repository.savePick(currentRound.id, matchId, newOption);
       
       if (state is PredictorRoundLoaded) {
         final latestState = state as PredictorRoundLoaded;

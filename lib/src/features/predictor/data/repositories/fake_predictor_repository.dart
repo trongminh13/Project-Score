@@ -106,7 +106,7 @@ class FakePredictorRepository implements PredictorRepository {
   }
 
   @override
-  Future<void> savePick(String roundId, String matchId, PickOption pick) async {
+  Future<void> savePick(String roundId, String matchId, PickOption? pick) async {
     await Future.delayed(const Duration(milliseconds: 300));
     const scenario = String.fromEnvironment('MOCK_SCENARIO', defaultValue: 'open');
     if (scenario == 'offline') {
@@ -115,7 +115,11 @@ class FakePredictorRepository implements PredictorRepository {
     if (scenario == 'too_late') {
       throw MatchLockedException();
     }
-    _inMemoryPicks[matchId] = pick;
+    if (pick == null) {
+      _inMemoryPicks.remove(matchId);
+    } else {
+      _inMemoryPicks[matchId] = pick;
+    }
   }
 
   @override
