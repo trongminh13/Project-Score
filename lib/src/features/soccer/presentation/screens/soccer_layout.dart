@@ -92,9 +92,9 @@ class SoccerLayout extends StatelessWidget {
           useRailNavigation
               ? null
               : _FloatingBottomNav(
-                  currentIndex: currentIndex,
-                  onTap: (index) => _onTap(context, index),
-                ),
+                currentIndex: currentIndex,
+                onTap: (index) => _onTap(context, index),
+              ),
     );
   }
 
@@ -112,15 +112,12 @@ class _FloatingBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const _FloatingBottomNav({
-    required this.currentIndex,
-    required this.onTap,
-  });
+  const _FloatingBottomNav({required this.currentIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    
+
     return SafeArea(
       bottom: true,
       child: Padding(
@@ -150,11 +147,18 @@ class _FloatingBottomNav extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _NavItem(
-                    icon: Icons.home_outlined,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: MediaQuery.of(context).size.width - AppSpacing.l * 2,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                    _NavItem(
+                      icon: Icons.home_outlined,
                     activeIcon: Icons.home_rounded,
                     label: l10n.home,
                     isSelected: currentIndex == 0,
@@ -177,7 +181,7 @@ class _FloatingBottomNav extends StatelessWidget {
                   _NavItem(
                     icon: Icons.sports_esports_outlined,
                     activeIcon: Icons.sports_esports,
-                    label: 'Dự đoán',
+                    label: 'Fantasy',
                     isSelected: currentIndex == 3,
                     onTap: () => onTap(3),
                   ),
@@ -188,7 +192,9 @@ class _FloatingBottomNav extends StatelessWidget {
                     isSelected: currentIndex == 4,
                     onTap: () => onTap(4),
                   ),
-                ],
+                  ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -223,7 +229,10 @@ class _NavItem extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? context.colors.primary.withValues(alpha: 0.15) : Colors.transparent,
+          color:
+              isSelected
+                  ? context.colors.primary.withValues(alpha: 0.15)
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -231,7 +240,10 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               isSelected ? activeIcon : icon,
-              color: isSelected ? context.colors.primary : context.colorsExt.textMuted,
+              color:
+                  isSelected
+                      ? context.colors.primary
+                      : context.colorsExt.textMuted,
               size: 24,
             ),
             if (isSelected) ...[
@@ -267,9 +279,9 @@ class _SoccerHead extends StatelessWidget {
         Image.asset(AppAssets.appLogo, height: 32.h),
         Text(
           context.l10n.bottomNavigationTitle(currentIndex),
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
       ],
     );

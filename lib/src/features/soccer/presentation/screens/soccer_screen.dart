@@ -17,7 +17,9 @@ import '../cubit/soccer/soccer_cubit.dart';
 import '../cubit/soccer/soccer_state.dart';
 import '../widgets/modal_sheet_content.dart';
 import '../widgets/view_fixtures.dart';
-import '../widgets/home_discover_dashboard.dart';
+import '../widgets/home_live_fixtures_dashboard.dart';
+import '../../../../core/widgets/app_search_bar.dart';
+
 
 class SoccerScreen extends StatefulWidget {
   const SoccerScreen({super.key});
@@ -28,6 +30,13 @@ class SoccerScreen extends StatefulWidget {
 
 class _SoccerScreenState extends State<SoccerScreen> {
   Timer? _timer;
+  String _searchQuery = '';
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+  }
 
   @override
   void initState() {
@@ -106,7 +115,7 @@ class _SoccerScreenState extends State<SoccerScreen> {
       ],
       child: RefreshIndicator(
         onRefresh: context.read<SoccerCubit>().getTodayFixtures,
-        child: const SingleChildScrollView(
+        child: SingleChildScrollView(
           physics: BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
@@ -116,8 +125,12 @@ class _SoccerScreenState extends State<SoccerScreen> {
             spacing: AppSpacing.xl,
             children: [
               SizedBox(height: AppSpacing.xs),
+              AppSearchBar(
+                hintText: 'Tìm kiếm đội bóng, giải đấu...',
+                onChanged: _onSearchChanged,
+              ),
               _LeaguesHeader(),
-              _ViewFixtures(),
+              _ViewFixtures(searchQuery: _searchQuery),
               SizedBox(height: AppSpacing.xs),
             ],
           ),
@@ -125,6 +138,7 @@ class _SoccerScreenState extends State<SoccerScreen> {
       ),
     );
   }
+
 }
 
 class _LeaguesHeader extends StatelessWidget {
@@ -164,7 +178,8 @@ class _LeaguesHeader extends StatelessWidget {
 }
 
 class _ViewFixtures extends StatelessWidget {
-  const _ViewFixtures();
+  final String searchQuery;
+  const _ViewFixtures({this.searchQuery = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -186,23 +201,8 @@ class _ViewFixtures extends StatelessWidget {
                     physics: NeverScrollableScrollPhysics(),
                   ), // Use ShimmerList from Phase 2 instead of circular loading
             ),
-            SoccerTodayFixturesLoaded(
-              liveFixtures: final live,
-              todayFixtures: final today,
-            )
-                when today.isNotEmpty =>
-              StaggeredList(
-                children: [
-                  if (live.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
-                      child: RepaintBoundary(child: ViewLiveFixtures(fixtures: live)),
-                    ),
-                  if (today.isNotEmpty) ViewDayFixtures(fixtures: today),
-                ],
-              ),
             SoccerTodayFixturesLoaded() =>
-              const HomeDiscoverDashboard().animate().fade().slideY(begin: 0.1),
+              HomeLiveFixturesDashboard(searchQuery: searchQuery),
             _ => const SizedBox.shrink(),
           },
     );

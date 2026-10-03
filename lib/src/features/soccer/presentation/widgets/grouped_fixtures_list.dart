@@ -15,6 +15,8 @@ import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/constants/app_decorations.dart';
 import '../../../../core/widgets/custom_image.dart';
 import 'fixture_card.dart';
+import 'league_grouped_card.dart';
+import 'compact_fixture_row.dart';
 
 sealed class GroupedFixtureItem {
   const GroupedFixtureItem();
@@ -34,12 +36,16 @@ class GroupedFixturesList extends StatefulWidget {
   final List<SoccerFixture> fixtures;
   final bool showLeagueLogo;
   final Widget? bottomWidget;
+  final bool useCompactLayout;
+  final bool isScrollable;
 
   const GroupedFixturesList({
     super.key,
     required this.fixtures,
     this.showLeagueLogo = false,
     this.bottomWidget,
+    this.useCompactLayout = false,
+    this.isScrollable = true,
   });
 
   @override
@@ -176,7 +182,9 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
   Widget _buildDateGroupedList(BuildContext context) {
     final itemCount = _groupedItems.length + (widget.bottomWidget != null ? 1 : 0);
     return ListView.builder(
-      controller: _scrollController,
+      controller: widget.isScrollable ? _scrollController : null,
+      shrinkWrap: !widget.isScrollable,
+      physics: widget.isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 120),
       itemCount: itemCount,
       itemBuilder: (context, index) {
@@ -198,10 +206,20 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
               ),
             ),
           ),
-          FixtureCardItem(fixture: final fixture) => _buildFixtureCard(
-            context,
-            fixture,
-          ),
+          FixtureCardItem(fixture: final fixture) => widget.useCompactLayout 
+            ? Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.s,
+                  vertical: 4.0,
+                ),
+                decoration: BoxDecoration(
+                  color: context.colorsExt.surfaceElevated,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [AppShadows.floatingShadow],
+                ),
+                child: CompactFixtureRow(fixture: fixture),
+              )
+            : _buildFixtureCard(context, fixture),
         };
 
         return FadeSlideIn(
@@ -216,42 +234,57 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
     final groups = _buildGroupedFixturesByLeague(widget.fixtures);
 
     return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
+      shrinkWrap: !widget.isScrollable,
+      physics: widget.isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
       slivers: [
-        for (int i = 0; i < groups.length; i++)
-          SliverMainAxisGroup(
-            slivers: [
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _LeagueHeaderDelegate(
-                  league: groups[i].league,
-                  context: context,
+        if (widget.useCompactLayout)
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final group = groups[index];
+              return FadeSlideIn(
+                delay: Duration(milliseconds: 30 * index.clamp(0, 10)),
+                child: LeagueGroupedCard(
+                  league: group.league,
+                  fixtures: group.fixtures,
                 ),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final fixture = groups[i].fixtures[index];
-                  return FadeSlideIn(
-                    delay: Duration(milliseconds: 30 * index.clamp(0, 10)),
-                    child: Column(
-                      children: [
-                        _buildFixtureCard(context, fixture),
-                        if (index < groups[i].fixtures.length - 1)
-                          Divider(
-                            color: context.colorsExt.dividerSubtle,
-                            height: 1,
-                            thickness: 1,
-                            indent: AppSpacing.xxl,
-                            endIndent: AppSpacing.l,
-                          ),
-                      ],
-                    ),
-                  );
-                }, childCount: groups[i].fixtures.length),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
-            ],
-          ),
+              );
+            }, childCount: groups.length),
+          )
+        else
+          for (int i = 0; i < groups.length; i++)
+            SliverMainAxisGroup(
+              slivers: [
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _LeagueHeaderDelegate(
+                    league: groups[i].league,
+                    context: context,
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final fixture = groups[i].fixtures[index];
+                    return FadeSlideIn(
+                      delay: Duration(milliseconds: 30 * index.clamp(0, 10)),
+                      child: Column(
+                        children: [
+                          _buildFixtureCard(context, fixture),
+                          if (index < groups[i].fixtures.length - 1)
+                            Divider(
+                              color: context.colorsExt.dividerSubtle,
+                              height: 1,
+                              thickness: 1,
+                              indent: AppSpacing.xxl,
+                              endIndent: AppSpacing.l,
+                            ),
+                        ],
+                      ),
+                    );
+                  }, childCount: groups[i].fixtures.length),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
+              ],
+            ),
         if (widget.bottomWidget != null)
           SliverToBoxAdapter(
             child: widget.bottomWidget!,

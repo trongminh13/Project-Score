@@ -9,7 +9,7 @@ class PredictorMainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dự đoán tỉ số'),
+        title: const Text('Game Dự đoán tỉ số'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -20,7 +20,7 @@ class PredictorMainScreen extends StatelessWidget {
                 builder: (context) => const _RulesSheet(),
               );
             },
-          )
+          ),
         ],
       ),
       body: const PredictorPredictView(),
@@ -39,13 +39,22 @@ class _RulesSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Luật chơi', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            'Luật chơi',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           const Text('• Mỗi vòng có 6 trận, dự đoán Thắng/Hòa/Thua.'),
           const Text('• Đoán đúng 1 trận được 10 điểm.'),
-          const Text('• Đoán đúng 6 trận được thưởng thêm 5 điểm (Tối đa 65 điểm).'),
+          const Text(
+            '• Đoán đúng 6 trận được thưởng thêm 5 điểm (Tối đa 65 điểm).',
+          ),
           const Text('• Kết quả tính trong 90 phút thi đấu chính thức.'),
-          const Text('• Phải chốt dự đoán trước khi trận đấu bắt đầu (Giờ Server).'),
+          const Text(
+            '• Phải chốt dự đoán trước khi trận đấu bắt đầu (Giờ Server).',
+          ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -53,7 +62,7 @@ class _RulesSheet extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               child: const Text('Đã hiểu'),
             ),
-          )
+          ),
         ],
       ),
     );

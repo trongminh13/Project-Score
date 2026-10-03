@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
 import 'package:live_score/src/core/constants/app_constants.dart';
 import 'package:live_score/src/core/models/country_model.dart';
 
@@ -85,21 +84,46 @@ class SoccerDataSourceImpl implements SoccerDataSource {
   @override
   Future<List<SoccerFixtureModel>> getTodayFixtures() async {
     try {
-      final today = DateFormat('dd/MM/yyyy').format(dateTimeProvider.now().toLocal());
-      final response = await apiClient.get(
-        url: Endpoints.todayFixtures,
+      final responseCurrent = await apiClient.get(
+        url: Endpoints.currentRoundFixtures,
         queryParams: {
-          'sports': 1,
-          'startDate': today,
-          'endDate': today,
           'competitions': AppConstants.availableLeagues.join(','),
         },
       );
-
-      return _parseFixtures(
-        response,
+      final currentFixtures = _parseFixtures(
+        responseCurrent,
         allowedCompetitionIds: _availableLeagueIds,
       );
+
+      final responseToday = await apiClient.get(
+        url: Endpoints.todayFixtures,
+        queryParams: {
+          'competitions': AppConstants.availableLeagues.join(','),
+        },
+      );
+      final todayFixtures = _parseFixtures(
+        responseToday,
+        allowedCompetitionIds: _availableLeagueIds,
+      );
+
+      final Map<int, SoccerFixtureModel> merged = {};
+      // Add current fixtures first
+      for (final f in currentFixtures) {
+        merged[f.id] = f;
+      }
+      // Add today fixtures, which will overwrite/update if they exist
+      // This guarantees finished matches for today are included!
+      for (final f in todayFixtures) {
+        merged[f.id] = f;
+      }
+
+      final result = merged.values.toList();
+      result.sort((a, b) {
+        final dateA = a.startTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final dateB = b.startTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return dateA.compareTo(dateB);
+      });
+      return result;
     } catch (error) {
       rethrow;
     }

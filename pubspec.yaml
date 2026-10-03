@@ -33,6 +33,7 @@ dependencies:
   shimmer: ^3.0.0
   smooth_page_indicator: ^2.0.1
   palette_generator: ^0.3.3+7
+  confetti: ^0.8.0
 
 dev_dependencies:
   bloc_test: ^10.0.0

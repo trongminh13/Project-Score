@@ -41,7 +41,10 @@ Failure _handleError(DioException error) {
       return DataSource.networkConnectError.getFailure();
     case DioExceptionType.badResponse:
       switch (error.response?.statusCode) {
-        case StatusCode.internalServerError:
+                case StatusCode.internalServerError:
+        case 502:
+        case 503:
+        case 504:
           return DataSource.internalServerError.getFailure();
         case StatusCode.clientClosedRequest:
           return DataSource.clientClosedRequest.getFailure();

@@ -6,6 +6,7 @@ import '../features/favorites/presentation/cubit/favorites_cubit.dart';
 import '../features/favorites/presentation/screens/favorites_screen.dart';
 import '../features/predictor/presentation/cubit/predictor_round_cubit.dart';
 import '../features/predictor/presentation/screens/predictor_main_screen.dart';
+import '../features/predictor/presentation/screens/predictor_success_screen.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -32,6 +33,7 @@ class Routes {
   static const String settings = '/settings';
   static const String favorites = '/favorites';
   static const String predictor = '/predictor';
+  static const String predictorSuccess = '/predictor-success';
   static const String teamDetails = '/team_details/:id';
 }
 
@@ -123,6 +125,12 @@ class AppRouter {
         path: Routes.settings,
         pageBuilder: (context, state) {
           return const NoTransitionPage(child: SettingsScreen());
+        },
+      ),
+      GoRoute(
+        path: Routes.predictorSuccess,
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(child: PredictorSuccessScreen());
         },
       ),
     ],

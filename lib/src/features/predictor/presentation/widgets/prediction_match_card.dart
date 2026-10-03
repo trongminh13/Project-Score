@@ -4,6 +4,7 @@ import 'package:live_score/src/core/constants/app_spacing.dart';
 import 'package:live_score/src/core/constants/app_decorations.dart';
 import 'package:live_score/src/core/extensions/context_ext.dart';
 import 'package:live_score/src/core/widgets/custom_image.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../domain/entities/predictor_match.dart';
 import '../../domain/entities/predictor_pick.dart';
@@ -199,61 +200,136 @@ class PredictionMatchCard extends StatelessWidget {
   ) {
     final isPending = syncStatus == SyncStatus.pending;
     final isSelected = selectedPick == option;
+
+    return _AnimatedPickButton(
+      option: option,
+      name: name,
+      logoUrl: logoUrl,
+      isLocked: isLocked,
+      isPending: isPending,
+      isSelected: isSelected,
+      onPick: onPick,
+    );
+  }
+}
+
+class _AnimatedPickButton extends StatefulWidget {
+  final PickOption option;
+  final String name;
+  final String? logoUrl;
+  final bool isLocked;
+  final bool isPending;
+  final bool isSelected;
+  final Function(PickOption) onPick;
+
+  const _AnimatedPickButton({
+    required this.option,
+    required this.name,
+    this.logoUrl,
+    required this.isLocked,
+    required this.isPending,
+    required this.isSelected,
+    required this.onPick,
+  });
+
+  @override
+  State<_AnimatedPickButton> createState() => _AnimatedPickButtonState();
+}
+
+class _AnimatedPickButtonState extends State<_AnimatedPickButton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    if (widget.isLocked || widget.isPending) return;
     
+    // Play animation forward then reverse
+    _controller.forward(from: 0).then((_) {
+      _controller.reverse();
+    });
+    
+    widget.onPick(widget.option);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Color bgColor = context.colorsExt.surfaceElevated;
     Color borderColor = context.colorsExt.dividerSubtle;
     Color textColor = context.colors.onSurface;
 
-    if (isSelected) {
+    if (widget.isSelected) {
       bgColor = context.colors.primary;
       borderColor = context.colors.primary;
       textColor = context.colors.onPrimary;
-    } else if (isLocked) {
+    } else if (widget.isLocked) {
       bgColor = context.colors.surface.withValues(alpha: 0.5);
       textColor = context.colorsExt.textMuted;
     }
 
-    return InkWell(
-      onTap: (isLocked || isPending) ? null : () => onPick(option),
-      borderRadius: AppBorderRadius.mediumAll,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.m, horizontal: AppSpacing.s),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: AppBorderRadius.mediumAll,
-          border: Border.all(color: borderColor),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (logoUrl != null) ...[
-              CustomImage(
-                imageUrl: logoUrl,
-                width: 24,
-                height: 24,
-              ),
-              const SizedBox(height: AppSpacing.xs),
-            ],
-            Text(
-              name,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: textColor,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
+    Widget content = AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.m, horizontal: AppSpacing.s),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: AppBorderRadius.mediumAll,
+        border: Border.all(color: borderColor),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (widget.logoUrl != null) ...[
+            CustomImage(
+              imageUrl: widget.logoUrl!,
+              width: 24,
+              height: 24,
             ),
-            const SizedBox(height: 2),
-            Text(
-              option == PickOption.home ? '1' : (option == PickOption.draw ? '2' : '3'),
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: isSelected ? textColor.withValues(alpha: 0.8) : context.colorsExt.textMuted,
-              ),
-            ),
+            const SizedBox(height: AppSpacing.xs),
           ],
-        ),
+          Text(
+            widget.name,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: textColor,
+              fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            widget.option == PickOption.home ? '1' : (widget.option == PickOption.draw ? '2' : '3'),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: widget.isSelected ? textColor.withValues(alpha: 0.8) : context.colorsExt.textMuted,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Widget animatedContent = content.animate(
+      controller: _controller,
+      autoPlay: false,
+    )
+    .rotate(end: -0.05, duration: 150.ms, curve: Curves.easeOut)
+    .tint(color: Colors.green, end: 0.6, duration: 150.ms, curve: Curves.easeOut);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: (widget.isLocked || widget.isPending) ? null : _handleTap,
+        borderRadius: AppBorderRadius.mediumAll,
+        child: animatedContent,
       ),
     );
   }
