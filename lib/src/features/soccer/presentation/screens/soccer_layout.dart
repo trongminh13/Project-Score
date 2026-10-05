@@ -126,27 +126,23 @@ class _FloatingBottomNav extends StatelessWidget {
           right: AppSpacing.l,
           bottom: AppSpacing.l,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(32),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              height: 64,
-              decoration: BoxDecoration(
-                color: context.colors.surface.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: context.colorsExt.dividerSubtle,
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+        child: Container(
+          height: 64,
+          decoration: BoxDecoration(
+            color: context.colors.surface.withValues(alpha: 0.95),
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: context.colorsExt.dividerSubtle,
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
+            ],
+          ),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
@@ -197,8 +193,6 @@ class _FloatingBottomNav extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ),
       ),
     );
   }
