@@ -1,4 +1,3 @@
-import 'predictor_pick.dart';
 
 class PredictorMatch {
   final String id;

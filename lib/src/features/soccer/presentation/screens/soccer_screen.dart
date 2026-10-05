@@ -1,13 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_score/src/core/constants/app_spacing.dart';
 import 'package:live_score/src/core/widgets/app_error_dialog.dart';
 
-import '../../../../core/utils/app_animations.dart';
-import '../../../../core/widgets/app_empty.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/leagues_header.dart';
 import '../../../../core/widgets/settings_language_listener.dart';
@@ -16,7 +13,6 @@ import '../cubit/leagues/leagues_state.dart';
 import '../cubit/soccer/soccer_cubit.dart';
 import '../cubit/soccer/soccer_state.dart';
 import '../widgets/modal_sheet_content.dart';
-import '../widgets/view_fixtures.dart';
 import '../widgets/home_live_fixtures_dashboard.dart';
 import '../../../../core/widgets/app_search_bar.dart';
 

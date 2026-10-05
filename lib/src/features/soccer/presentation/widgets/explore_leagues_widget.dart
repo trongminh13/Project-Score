@@ -8,7 +8,6 @@ import 'package:live_score/src/core/extensions/context_ext.dart';
 import 'package:live_score/src/core/widgets/custom_image.dart';
 
 import '../cubit/leagues/leagues_cubit.dart';
-import '../cubit/soccer/soccer_cubit.dart';
 
 class ExploreLeaguesWidget extends StatelessWidget {
   final ValueChanged<int> onLeagueTap;

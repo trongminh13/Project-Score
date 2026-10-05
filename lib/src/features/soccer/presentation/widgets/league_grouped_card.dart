@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:live_score/src/core/constants/app_decorations.dart';
 import 'package:live_score/src/core/constants/app_spacing.dart';
-import 'package:live_score/src/core/extensions/color.dart';
 import 'package:live_score/src/core/extensions/context_ext.dart';
 import 'package:live_score/src/core/widgets/custom_image.dart';
 
