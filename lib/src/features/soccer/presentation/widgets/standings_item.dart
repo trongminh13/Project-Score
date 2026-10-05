@@ -28,7 +28,8 @@ class StandingsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final metrics = StandingsMetrics.fromWidth(constraints.maxWidth);
+        try {
+          final metrics = StandingsMetrics.fromWidth(constraints.maxWidth);
         final headersNumbers = [
           '${teamRank.stats.played}',
           '${teamRank.stats.win}',
@@ -129,6 +130,10 @@ class StandingsItem extends StatelessWidget {
             ),
           ),
         );
+        } catch (e) {
+          debugPrint('Error building StandingsItem: $e');
+          return const SizedBox.shrink();
+        }
       },
     );
   }

@@ -47,10 +47,10 @@ class _PredictorPredictViewState extends State<PredictorPredictView> {
     return BlocConsumer<PredictorRoundCubit, PredictorRoundState>(
       listenWhen: (previous, current) {
         if (previous is PredictorRoundLoaded && current is PredictorRoundLoaded) {
-          return previous.round.isSubmitted != current.round.isSubmitted || 
+          return (!previous.round.isSubmitted && current.round.isSubmitted) || 
                  previous.submitError != current.submitError;
         }
-        return true;
+        return false;
       },
       listener: (context, state) {
         if (state is PredictorRoundLoaded) {
@@ -104,6 +104,11 @@ class _PredictorPredictViewState extends State<PredictorPredictView> {
             Positioned.fill(
               child: Column(
                 children: [
+                if (round.prizeName != null || round.prizeDescription != null)
+                  _PrizeBanner(
+                    title: round.prizeName ?? 'Phần thưởng vòng đấu',
+                    description: round.prizeDescription ?? '',
+                  ),
                 Padding(
                   padding: const EdgeInsets.all(AppSpacing.m),
                   child: Row(
@@ -112,7 +117,7 @@ class _PredictorPredictViewState extends State<PredictorPredictView> {
                       Expanded(
                         child: Text(
                           round.name,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -136,7 +141,7 @@ class _PredictorPredictViewState extends State<PredictorPredictView> {
                             Text(
                               '${round.userPicks.length}/${matches.length} đã chọn',
                               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                color: context.colorsExt.textMuted,
+                                color: Colors.white70,
                               ),
                             ),
                         ],
@@ -218,6 +223,71 @@ class _PredictorPredictViewState extends State<PredictorPredictView> {
           ],
         );
       },
+    );
+  }
+}
+
+class _PrizeBanner extends StatelessWidget {
+  final String title;
+  final String description;
+  const _PrizeBanner({required this.title, required this.description});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(AppSpacing.m, AppSpacing.m, AppSpacing.m, 0),
+      padding: const EdgeInsets.all(AppSpacing.m),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.amber.shade700, Colors.orange.shade500],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.emoji_events, color: Colors.white, size: 32),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

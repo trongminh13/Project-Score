@@ -14,7 +14,6 @@ import '../cubit/soccer/soccer_cubit.dart';
 import '../cubit/soccer/soccer_state.dart';
 import '../widgets/modal_sheet_content.dart';
 import '../widgets/home_live_fixtures_dashboard.dart';
-import '../../../../core/widgets/app_search_bar.dart';
 
 
 class SoccerScreen extends StatefulWidget {
@@ -26,13 +25,7 @@ class SoccerScreen extends StatefulWidget {
 
 class _SoccerScreenState extends State<SoccerScreen> {
   Timer? _timer;
-  String _searchQuery = '';
 
-  void _onSearchChanged(String query) {
-    setState(() {
-      _searchQuery = query;
-    });
-  }
 
   @override
   void initState() {
@@ -121,12 +114,8 @@ class _SoccerScreenState extends State<SoccerScreen> {
             spacing: AppSpacing.xl,
             children: [
               SizedBox(height: AppSpacing.xs),
-              AppSearchBar(
-                hintText: 'Tìm kiếm đội bóng, giải đấu...',
-                onChanged: _onSearchChanged,
-              ),
               _LeaguesHeader(),
-              _ViewFixtures(searchQuery: _searchQuery),
+              const _ViewFixtures(searchQuery: ''),
               SizedBox(height: AppSpacing.xs),
             ],
           ),

@@ -7,6 +7,8 @@ class PredictorRound {
   final int totalPossiblePoints;
   final List<PredictorMatch> matches;
   final Map<String, PickOption> userPicks;
+  final String? prizeName;
+  final String? prizeDescription;
   final bool isSubmitted;
   final Duration serverTimeOffset; // Calculated as serverTime - localTime at fetch
 
@@ -16,6 +18,8 @@ class PredictorRound {
     required this.totalPossiblePoints,
     required this.matches,
     required this.userPicks,
+    this.prizeName,
+    this.prizeDescription,
     this.isSubmitted = false,
     this.serverTimeOffset = Duration.zero,
   });
@@ -26,6 +30,8 @@ class PredictorRound {
     int? totalPossiblePoints,
     List<PredictorMatch>? matches,
     Map<String, PickOption>? userPicks,
+    String? prizeName,
+    String? prizeDescription,
     bool? isSubmitted,
     Duration? serverTimeOffset,
   }) {
@@ -35,6 +41,8 @@ class PredictorRound {
       totalPossiblePoints: totalPossiblePoints ?? this.totalPossiblePoints,
       matches: matches ?? this.matches,
       userPicks: userPicks ?? this.userPicks,
+      prizeName: prizeName ?? this.prizeName,
+      prizeDescription: prizeDescription ?? this.prizeDescription,
       isSubmitted: isSubmitted ?? this.isSubmitted,
       serverTimeOffset: serverTimeOffset ?? this.serverTimeOffset,
     );

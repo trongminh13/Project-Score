@@ -43,7 +43,7 @@ class FakePredictorRepository implements PredictorRepository {
   }
 
   @override
-  Future<List<PredictorRound>> getActiveRounds() async => _round != null ? [_round!] : [];
+  Future<List<PredictorRound>> getActiveRounds({String? leagueId}) async => _round != null ? [_round!] : [];
 
   @override
   Future<void> savePick(String roundId, String matchId, PickOption? option) async {

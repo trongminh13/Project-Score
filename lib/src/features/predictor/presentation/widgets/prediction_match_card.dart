@@ -279,7 +279,7 @@ class _AnimatedPickButtonState extends State<_AnimatedPickButton> with SingleTic
 
     Widget content = AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.m, horizontal: AppSpacing.s),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: AppBorderRadius.mediumAll,
@@ -291,8 +291,8 @@ class _AnimatedPickButtonState extends State<_AnimatedPickButton> with SingleTic
           if (widget.logoUrl != null) ...[
             CustomImage(
               imageUrl: widget.logoUrl!,
-              width: 24,
-              height: 24,
+              width: 18,
+              height: 18,
             ),
             const SizedBox(height: AppSpacing.xs),
           ],

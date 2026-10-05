@@ -1,14 +1,12 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:live_score/src/core/constants/app_spacing.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_score/src/config/app_route.dart';
 import 'package:live_score/src/core/extensions/context_ext.dart';
-import 'package:live_score/src/core/extensions/responsive_size.dart';
 import 'package:live_score/src/core/layout/adaptive_layout.dart';
+import 'package:live_score/src/core/widgets/app_search_bar.dart';
 
 import '../../../../core/l10n/app_l10n.dart';
-import '../../../../core/constants/app_assets.dart';
 
 class SoccerLayout extends StatelessWidget {
   const SoccerLayout({super.key, required this.child});
@@ -33,8 +31,26 @@ class SoccerLayout extends StatelessWidget {
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
-        title: _SoccerHead(currentIndex: currentIndex),
+        toolbarHeight: 56,
+        elevation: 0,
+        backgroundColor: context.colors.surface,
+        leading: IconButton(
+          icon: const Icon(Icons.account_circle_outlined),
+          onPressed: () {},
+        ),
+        title: SizedBox(
+          height: 40,
+          child: AppSearchBar(
+            hintText: 'Tìm kiếm...',
+            padding: EdgeInsets.zero,
+            onChanged: (val) {},
+          ),
+        ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {},
+          ),
           IconButton(
             onPressed: () => context.push(Routes.settings),
             icon: const Icon(Icons.settings_outlined),
@@ -43,7 +59,9 @@ class SoccerLayout extends StatelessWidget {
           const SizedBox(width: AppSpacing.s),
         ],
       ),
-      body: Row(
+      body: SafeArea(
+        bottom: false,
+        child: Row(
         children: [
           if (useRailNavigation) ...[
             NavigationRail(
@@ -88,6 +106,7 @@ class SoccerLayout extends StatelessWidget {
           Expanded(child: AdaptiveContentArea(child: child)),
         ],
       ),
+    ),
       bottomNavigationBar:
           useRailNavigation
               ? null
@@ -257,27 +276,3 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _SoccerHead extends StatelessWidget {
-  const _SoccerHead({required this.currentIndex});
-
-  final int currentIndex;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      spacing: AppSpacing.m,
-      children: [
-        Image.asset(AppAssets.appLogo, height: 32.h),
-        Text(
-          context.l10n.bottomNavigationTitle(currentIndex),
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-        ),
-      ],
-    );
-  }
-}

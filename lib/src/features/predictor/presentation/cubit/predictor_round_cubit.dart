@@ -9,10 +9,10 @@ class PredictorRoundCubit extends Cubit<PredictorRoundState> {
 
   PredictorRoundCubit({required this.repository}) : super(PredictorRoundInitial());
 
-  Future<void> loadCurrentRound() async {
+  Future<void> loadCurrentRound({String? leagueId}) async {
     emit(PredictorRoundLoading());
     try {
-      final rounds = await repository.getActiveRounds();
+      final rounds = await repository.getActiveRounds(leagueId: leagueId);
       if (rounds.isEmpty) {
         emit(PredictorRoundNoActive());
       } else {

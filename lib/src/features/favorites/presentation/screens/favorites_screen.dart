@@ -12,17 +12,12 @@ class FavoritesScreen extends StatelessWidget {
     try {
       context.read<FavoritesCubit>(); // Trigger lookup to catch errors early
     } catch (e) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Yêu thích')),
-        body: const Center(
-          child: Text('Chưa thể kết nối được danh sách yêu thích. Vui lòng thử lại sau!'),
-        ),
+      return const Center(
+        child: Text('Chưa thể kết nối được danh sách yêu thích. Vui lòng thử lại sau!'),
       );
     }
     
-    return Scaffold(
-      appBar: AppBar(title: const Text('Yêu thích')),
-      body: BlocBuilder<FavoritesCubit, FavoritesState>(
+    return BlocBuilder<FavoritesCubit, FavoritesState>(
         builder: (context, state) {
           if (state is FavoritesLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -50,7 +45,6 @@ class FavoritesScreen extends StatelessWidget {
           }
           return const Center(child: CircularProgressIndicator());
         },
-      ),
-    );
+      );
   }
 }
