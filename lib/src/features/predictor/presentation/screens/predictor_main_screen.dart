@@ -30,10 +30,7 @@ class PredictorMainScreen extends StatelessWidget {
             indicatorWeight: 3,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white70,
-            tabs: [
-              Tab(text: 'Dự đoán Fantasy'),
-              Tab(text: 'AI Phân tích'),
-            ],
+            tabs: [Tab(text: 'Dự đoán Fantasy'), Tab(text: 'Phân tích')],
           ),
           actions: [
             IconButton(
@@ -43,7 +40,9 @@ class PredictorMainScreen extends StatelessWidget {
                   context: context,
                   builder: (context) => const _RulesSheet(),
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                   ),
                 );
               },
@@ -61,10 +60,7 @@ class PredictorMainScreen extends StatelessWidget {
           child: const SafeArea(
             bottom: false,
             child: TabBarView(
-              children: [
-                PredictorPredictView(),
-                AiAnalysisView(),
-              ],
+              children: [PredictorPredictView(), AiAnalysisView()],
             ),
           ),
         ),
@@ -72,8 +68,6 @@ class PredictorMainScreen extends StatelessWidget {
     );
   }
 }
-
-
 
 class _RulesSheet extends StatelessWidget {
   const _RulesSheet();
@@ -103,9 +97,7 @@ class _RulesSheet extends StatelessWidget {
             '• Đoán đúng 6 trận được thưởng thêm 5 điểm (Tối đa 65 điểm).',
           ),
           const Text('• Kết quả tính trong 90 phút thi đấu chính thức.'),
-          const Text(
-            '• Phải chốt dự đoán trước khi trận đấu bắt đầu.',
-          ),
+          const Text('• Phải chốt dự đoán trước khi trận đấu bắt đầu.'),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -114,7 +106,9 @@ class _RulesSheet extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.colors.primary,
                 foregroundColor: context.colors.onPrimary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: const Text('Đã hiểu'),
             ),
