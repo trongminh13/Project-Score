@@ -7,6 +7,7 @@ import '../../../../core/domain/entities/soccer_fixture.dart';
 import '../../../../core/extensions/context_ext.dart';
 import '../../../../core/widgets/app_empty.dart';
 import '../cubit/soccer/soccer_cubit.dart';
+import '../../../../core/widgets/ad_banner_widget.dart';
 import '../cubit/soccer/soccer_state.dart';
 import 'grouped_fixtures_list.dart';
 
@@ -56,6 +57,7 @@ class _HomeLiveFixturesDashboardState extends State<HomeLiveFixturesDashboard> {
 
         return Column(
           children: [
+            const AdBannerWidget(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: AppSpacing.s),
               child: _buildFilterBar(context),

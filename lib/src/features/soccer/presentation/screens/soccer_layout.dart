@@ -1,3 +1,4 @@
+import 'package:live_score/src/core/widgets/app_background_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:live_score/src/core/constants/app_spacing.dart';
 import 'package:go_router/go_router.dart';
@@ -28,12 +29,14 @@ class SoccerLayout extends StatelessWidget {
       _ => 0,
     };
 
-    return Scaffold(
-      extendBody: true,
-      appBar: AppBar(
-        toolbarHeight: 56,
-        elevation: 0,
-        backgroundColor: context.colors.surface,
+    return AppBackgroundWrapper(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBody: true,
+        appBar: AppBar(
+          toolbarHeight: 56,
+          elevation: 0,
+          backgroundColor: context.colors.surface.withValues(alpha: 0.85),
         leading: IconButton(
           icon: const Icon(Icons.account_circle_outlined),
           onPressed: () {},
@@ -114,6 +117,7 @@ class SoccerLayout extends StatelessWidget {
                 currentIndex: currentIndex,
                 onTap: (index) => _onTap(context, index),
               ),
+      ),
     );
   }
 

@@ -34,7 +34,7 @@ class LeagueGroupedCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.l,
-              vertical: AppSpacing.m,
+              vertical: AppSpacing.s,
             ),
             child: Row(
               children: [

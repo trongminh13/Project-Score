@@ -73,7 +73,7 @@ class FixtureCard extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.l),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: AppSpacing.s),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -149,8 +149,8 @@ class FixtureCard extends StatelessWidget {
                       Hero(
                         tag: 'team_${homeTeam.id}_fixture_${soccerFixture.id}',
                         child: CustomImage(
-                          height: 40,
-                          width: 40,
+                          height: 30,
+                          width: 30,
                           imageUrl: homeTeam.logo,
                         ),
                       ),
@@ -229,8 +229,8 @@ class FixtureCard extends StatelessWidget {
                       Hero(
                         tag: 'team_${awayTeam.id}_fixture_${soccerFixture.id}',
                         child: CustomImage(
-                          height: 40,
-                          width: 40,
+                          height: 30,
+                          width: 30,
                           imageUrl: awayTeam.logo,
                         ),
                       ),

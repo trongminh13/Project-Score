@@ -7,7 +7,8 @@ import 'predictor_round_state.dart';
 class PredictorRoundCubit extends Cubit<PredictorRoundState> {
   final PredictorRepository repository;
 
-  PredictorRoundCubit({required this.repository}) : super(PredictorRoundInitial());
+  PredictorRoundCubit({required this.repository})
+    : super(PredictorRoundInitial());
 
   Future<void> loadCurrentRound({String? leagueId}) async {
     emit(PredictorRoundLoading());
@@ -19,22 +20,28 @@ class PredictorRoundCubit extends Cubit<PredictorRoundState> {
         emit(PredictorRoundLoaded(round: rounds.first));
       }
     } catch (e) {
-      emit(PredictorRoundError('Không thể tải dữ liệu vòng đấu. Vui lòng thử lại.'));
+      emit(
+        PredictorRoundError(
+          'Không thể tải dữ liệu vòng đấu. Vui lòng thử lại.',
+        ),
+      );
     }
   }
 
   Future<void> selectPick(String matchId, PickOption option) async {
     if (state is! PredictorRoundLoaded) return;
-    
+
     final currentState = state as PredictorRoundLoaded;
     final currentRound = currentState.round;
-    
+
     // Calculate server time dynamically
     final serverTime = DateTime.now().add(currentRound.serverTimeOffset);
 
     final match = currentRound.matches.firstWhere((m) => m.id == matchId);
     if (match.isLocked(serverTime)) {
-      final newStatuses = Map<String, SyncStatus>.from(currentState.syncStatuses);
+      final newStatuses = Map<String, SyncStatus>.from(
+        currentState.syncStatuses,
+      );
       newStatuses[matchId] = SyncStatus.tooLate;
       emit(currentState.copyWith(syncStatuses: newStatuses));
       return;
@@ -49,22 +56,26 @@ class PredictorRoundCubit extends Cubit<PredictorRoundState> {
     } else {
       newUserPicks[matchId] = newOption;
     }
-    
+
     final newStatuses = Map<String, SyncStatus>.from(currentState.syncStatuses);
     newStatuses[matchId] = SyncStatus.pending;
 
-    emit(currentState.copyWith(
-      round: currentRound.copyWith(userPicks: newUserPicks),
-      syncStatuses: newStatuses,
-      clearSubmitError: true,
-    ));
+    emit(
+      currentState.copyWith(
+        round: currentRound.copyWith(userPicks: newUserPicks),
+        syncStatuses: newStatuses,
+        clearSubmitError: true,
+      ),
+    );
 
     try {
       await repository.savePick(currentRound.id, matchId, newOption);
-      
+
       if (state is PredictorRoundLoaded) {
         final latestState = state as PredictorRoundLoaded;
-        final updatedStatuses = Map<String, SyncStatus>.from(latestState.syncStatuses);
+        final updatedStatuses = Map<String, SyncStatus>.from(
+          latestState.syncStatuses,
+        );
         updatedStatuses[matchId] = SyncStatus.synced;
         emit(latestState.copyWith(syncStatuses: updatedStatuses));
       }
@@ -80,7 +91,9 @@ class PredictorRoundCubit extends Cubit<PredictorRoundState> {
   void _updateSyncStatus(String matchId, SyncStatus status) {
     if (state is PredictorRoundLoaded) {
       final latestState = state as PredictorRoundLoaded;
-      final updatedStatuses = Map<String, SyncStatus>.from(latestState.syncStatuses);
+      final updatedStatuses = Map<String, SyncStatus>.from(
+        latestState.syncStatuses,
+      );
       updatedStatuses[matchId] = status;
       emit(latestState.copyWith(syncStatuses: updatedStatuses));
     }
@@ -89,29 +102,36 @@ class PredictorRoundCubit extends Cubit<PredictorRoundState> {
   Future<void> submitRound() async {
     if (state is! PredictorRoundLoaded) return;
     final currentState = state as PredictorRoundLoaded;
-    
+
     try {
       await repository.submitRound(currentState.round.id);
-      emit(currentState.copyWith(
-        round: currentState.round.copyWith(isSubmitted: true),
-        clearSubmitError: true,
-      ));
+      emit(
+        currentState.copyWith(
+          round: currentState.round.copyWith(isSubmitted: true),
+          clearSubmitError: true,
+        ),
+      );
     } on PredictorSubmitException catch (e) {
       emit(currentState.copyWith(submitError: e.message));
     } catch (e) {
-      emit(currentState.copyWith(submitError: 'Đã xảy ra lỗi không xác định khi chốt dự đoán.'));
+      emit(
+        currentState.copyWith(
+          submitError: 'Đã xảy ra lỗi không xác định khi chốt dự đoán.',
+        ),
+      );
     }
   }
 
   Future<void> retryFailedPicks() async {
     if (state is! PredictorRoundLoaded) return;
     final currentState = state as PredictorRoundLoaded;
-    
-    final failedMatches = currentState.syncStatuses.entries
-        .where((e) => e.value == SyncStatus.failed)
-        .map((e) => e.key)
-        .toList();
-        
+
+    final failedMatches =
+        currentState.syncStatuses.entries
+            .where((e) => e.value == SyncStatus.failed)
+            .map((e) => e.key)
+            .toList();
+
     for (final matchId in failedMatches) {
       final pick = currentState.round.userPicks[matchId];
       if (pick != null) {

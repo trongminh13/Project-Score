@@ -54,17 +54,18 @@ class CompactFixtureRow extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.l,
-          vertical: 10.0, // Highly compact padding
+          vertical: 5.0, // Ultra-compact height (~2/3)
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // LEFT COLUMN: Time or Status
             SizedBox(
-              width: 50,
+              width: 44,
               child: Text(
                 leftText,
                 style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: 11,
                   color: leftColor,
                   fontWeight: leftWeight,
                 ),
@@ -82,7 +83,7 @@ class CompactFixtureRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTeamRow(context, homeTeam.displayName, homeTeam.logo),
-                  const SizedBox(height: 6), // Tight spacing between teams
+                  const SizedBox(height: 2.5), // Compact height
                   _buildTeamRow(context, awayTeam.displayName, awayTeam.logo),
                 ],
               ),
@@ -98,15 +99,17 @@ class CompactFixtureRow extends StatelessWidget {
                 children: [
                   Text(
                     homeTeam.score.toString(),
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: 13,
                       fontWeight: isLive ? FontWeight.bold : FontWeight.w600,
                       color: isLive ? context.colors.error : context.colors.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 2.5),
                   Text(
                     awayTeam.score.toString(),
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: 13,
                       fontWeight: isLive ? FontWeight.bold : FontWeight.w600,
                       color: isLive ? context.colors.error : context.colors.onSurface,
                     ),
@@ -127,8 +130,8 @@ class CompactFixtureRow extends StatelessWidget {
                 }
                 return IconButton(
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                  iconSize: 20,
+                  constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+                  iconSize: 18,
                   onPressed: () {
                     try {
                       final isAdding = !isFav;
@@ -172,14 +175,15 @@ class CompactFixtureRow extends StatelessWidget {
       children: [
         CustomImage(
           imageUrl: logoUrl ?? '',
-          width: 16,
-          height: 16,
+          width: 14,
+          height: 14,
         ),
         const SizedBox(width: AppSpacing.s),
         Flexible(
           child: Text(
             name,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontSize: 13,
               fontWeight: FontWeight.w500,
               color: context.colors.onSurface,
             ),

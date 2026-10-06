@@ -12,11 +12,12 @@ import 'custom_image.dart';
 import 'league_card.dart';
 
 /// Circle-avatar league header used on the main soccer screen.
-final double _kCircleHeaderHeight = 68.0.h;
-final double _kLeagueAvatarRadius = 25.0.r;
-final double _kLeagueLogoSize = 25.0.w;
+/// Height reduced to 2/3 (68.0.h * 2/3 = 45.0.h) and auto-scroll loop disabled as requested.
+final double _kCircleHeaderHeight = 45.0.h;
+final double _kLeagueAvatarRadius = 17.0.r;
+final double _kLeagueLogoSize = 17.0.w;
 
-class CircleLeaguesHeader extends StatefulWidget {
+class CircleLeaguesHeader extends StatelessWidget {
   final List<League> leagues;
   final void Function(BuildContext, League) onLeagueTap;
 
@@ -27,78 +28,38 @@ class CircleLeaguesHeader extends StatefulWidget {
   });
 
   @override
-  State<CircleLeaguesHeader> createState() => _CircleLeaguesHeaderState();
-}
-
-class _CircleLeaguesHeaderState extends State<CircleLeaguesHeader> {
-  final ScrollController _scrollController = ScrollController();
-  Timer? _scrollTimer;
-  bool _isUserScrolling = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.leagues.isNotEmpty) {
-      _startAutoScroll();
-    }
-  }
-
-  @override
-  void dispose() {
-    _scrollTimer?.cancel();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _startAutoScroll() {
-    _scrollTimer?.cancel();
-    _scrollTimer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
-      if (_scrollController.hasClients && !_isUserScrolling) {
-        _scrollController.jumpTo(_scrollController.offset + 1.0);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (widget.leagues.isEmpty) return const SizedBox.shrink();
+    if (leagues.isEmpty) return const SizedBox.shrink();
 
     return Container(
       width: double.infinity,
       height: _kCircleHeaderHeight,
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
-      padding: const EdgeInsetsDirectional.only(start: AppSpacing.l),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
       decoration: BoxDecoration(
         gradient: context.colorsExt.accentGradient,
-        borderRadius: BorderRadius.circular(40.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(40.r),
-        child: Listener(
-        onPointerDown: (_) => _isUserScrolling = true,
-        onPointerUp: (_) {
-          _isUserScrolling = false;
-        },
-        onPointerCancel: (_) {
-          _isUserScrolling = false;
-        },
-        child: ListView.builder(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
+      child: Center(
+        child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            final realIndex = index % widget.leagues.length;
-            return Padding(
-              padding: const EdgeInsets.only(right: AppSpacing.s),
-              child: _buildLeagueAvatar(
-                league: widget.leagues[realIndex], 
-                context: context, 
-                index: realIndex
-              ),
-            );
-          },
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (int index = 0; index < leagues.length; index++) ...[
+                Padding(
+                  padding: const EdgeInsets.only(right: AppSpacing.s),
+                  child: _buildLeagueAvatar(
+                    league: leagues[index],
+                    context: context,
+                    index: index,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -113,20 +74,20 @@ class _CircleLeaguesHeaderState extends State<CircleLeaguesHeader> {
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
-          widget.onLeagueTap(context, league);
+          onLeagueTap(context, league);
         },
         child: Container(
           width: _kLeagueAvatarRadius * 2,
           height: _kLeagueAvatarRadius * 2,
-      decoration: BoxDecoration(
+          decoration: BoxDecoration(
             color: league.color != null ? league.color!.toColor : context.colorsExt.white,
             shape: BoxShape.circle,
             border: Border.all(color: context.colorsExt.white.withValues(alpha: 0.8), width: 1.5),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
               ),
             ],
           ),

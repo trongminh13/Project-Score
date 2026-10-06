@@ -51,7 +51,6 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
   @override
   void initState() {
     super.initState();
-    // Start at a high number that is a multiple of banners length to allow infinite scrolling in both directions
     _pageController = PageController(initialPage: _mockupBanners.length * 100);
     _startTimer();
   }
@@ -84,7 +83,7 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: 160,
+          height: 108, // Chiều cao duy trì 2/3 (108px)
           child: Listener(
             onPointerDown: (_) {
               _isUserInteracting = true;
@@ -120,13 +119,16 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Container(
-                      padding: const EdgeInsets.all(AppSpacing.l),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                        vertical: AppSpacing.m,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: AppBorderRadius.largeAll,
                         gradient: LinearGradient(
@@ -144,22 +146,22 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
                         children: [
                           Text(
                             banner.title,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: AppSpacing.s),
-                          Expanded(
-                            child: Text(
+                          const SizedBox(height: 4),
+                          Text(
                             banner.subtitle,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Colors.white.withValues(alpha: 0.9),
-                              height: 1.4,
+                              height: 1.3,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                          ),
                           ),
                         ],
                       ),
@@ -170,15 +172,15 @@ class _PromoBannersCarouselState extends State<PromoBannersCarousel> {
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.m),
+        const SizedBox(height: AppSpacing.s),
         AnimatedSmoothIndicator(
           activeIndex: _currentIndex,
           count: _mockupBanners.length,
           effect: ExpandingDotsEffect(
             activeDotColor: context.colors.primary,
             dotColor: context.colorsExt.dividerSubtle,
-            dotHeight: 6,
-            dotWidth: 6,
+            dotHeight: 5,
+            dotWidth: 5,
             expansionFactor: 3,
           ),
         ),

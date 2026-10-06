@@ -1,87 +1,68 @@
-# LỘ TRÌNH TRIỂN KHAI FOQ QUANT ENGINE (6 THÁNG)
+# LỘ TRÌNH PHÁT TRIỂN: FLASHSCORE ANALYTICS & GAMIFICATION (6 THÁNG)
 
-**Dự án:** Football Odds Quant Engine (FOQ) 1.0
-**Mục tiêu:** Xây dựng hệ thống lõi AI định lượng để tìm "Edge" (lợi thế) trên thị trường Asian Handicap & Over/Under. Phục vụ đầu tư nội bộ & cung cấp VIP Signal cho App Mobile.
-**Hardware Constraint:** Tối ưu hóa cho PC (RTX 3050, 16GB RAM).
-
----
-
-## THÁNG 1: XÂY DỰNG NỀN MẶNG DỮ LIỆU (DATA INFRASTRUCTURE)
-*Mục tiêu: Kéo được 10k trận đấu lịch sử từ nguồn Free, không bị lỗi cấu trúc.*
-
-- [ ] **Kiến trúc Database:** Setup PostgreSQL cục bộ chuyên dụng cho FOQ (Tách biệt hoàn toàn với DB của Mobile App).
-- [ ] **Data Ingestion (Cào dữ liệu):** Viết script Python (dùng thư viện `Polars` để tiết kiệm RAM 16GB) tải và parse CSV từ `Football-Data.co.uk`.
-- [ ] **Identity Resolution (Đồng bộ định danh):** 
-  - Tạo bảng `TEAM_MASTER` và `MATCH_MASTER`.
-  - Viết thuật toán Fuzzy Matching để đồng bộ tên đội bóng (Ví dụ: "Man Utd" = "Manchester United").
-- [ ] **Data Quality Framework:** Viết bộ lọc loại bỏ các trận đấu thiếu Odds mở cửa (Opening), thiếu Odds đóng cửa (Closing), hoặc sai mốc thời gian (Timestamp).
-
-## THÁNG 2: KỸ NGHỆ ĐẶC TRƯNG & CHỐNG RÒ RỈ DỮ LIỆU (FEATURE ENGINEERING)
-*Mục tiêu: Biến đổi dữ liệu thô thành các biến số có ý nghĩa toán học cho AI.*
-
-- [ ] **Snapshot Engine:** Xây dựng cơ chế chốt dữ liệu tại các mốc thời gian `T-48h`, `T-24h`, `T-6h` trước giờ bóng lăn. (Tuyệt đối cấm Data Leakage).
-- [ ] **Team Strength Index:** Viết module tính toán chỉ số ELO động cho các đội bóng.
-- [ ] **Market Implied Probability:** Code công thức quy đổi từ Tỷ lệ cược (Odds) của nhà cái sang Xác suất thực, loại bỏ "Vig" (Phế nhà cái).
-- [ ] **Feature Selection:** Lọc từ 150 trường thô xuống còn 30-50 biến số (Features) cốt lõi không bị nhiễu.
-
-## THÁNG 3: MÔ HÌNH CƠ BẢN & BỘ TÍNH TIỀN (BASELINE & SETTLEMENT)
-*Mục tiêu: Có hệ thống giả lập cá cược chuẩn xác để làm mốc so sánh.*
-
-- [ ] **Settlement Engine:** Xây dựng module tính tiền giả lập cực chuẩn cho kèo Asian Handicap (Xử lý các case nửa kèo như -0.75, +1.25). Phải Pass toàn bộ Unit Test.
-- [ ] **Baseline Model:** Code mô hình toán học cơ bản (Dixon-Coles) thuần túy không dùng Machine Learning.
-- [ ] **Baseline Backtest:** Chạy thử Baseline trên 2k trận đấu (GOLD Dataset). Đánh giá độ lệch chuẩn.
-
-## THÁNG 4: HUẤN LUYỆN MACHINE LEARNING (AI TRAINING)
-*Mục tiêu: Đưa AI vào thay thế Baseline, chạy trên GPU RTX 3050.*
-
-- [ ] **Model Setup:** Cài đặt và cấu hình `LightGBM` hoặc `XGBoost` (Bản hỗ trợ CUDA/GPU).
-- [ ] **Walk-Forward Validation:** Huấn luyện mô hình theo kiểu cuốn chiếu thời gian thực (Không dùng K-Fold ngẫu nhiên để tránh nhìn lén tương lai).
-- [ ] **Fair Odds Generation:** Output của mô hình phải xuất ra được "Tỷ lệ cược công bằng" (Fair Price). 
-- [ ] So sánh Fair Price của AI với Giá đóng cửa (Closing Line) của nhà cái để tính **CLV (Closing Line Value)**.
-
-## THÁNG 5: VƯỢT ẢI "KILL TEST" (STRESS TESTING)
-*Mục tiêu: Cố gắng đánh sập mô hình để chứng minh nó không ăn may.*
-
-- [ ] **Placebo/Permutation Test:** Đảo lộn ngẫu nhiên các biến số xem mô hình có bị mất lãi không (Nếu vẫn có lãi tức là AI đang học vẹt).
-- [ ] **Drawdown Simulation:** Tính toán chi phí giao dịch (Transaction cost) và trượt giá.
-- [ ] Loại bỏ 5% những lệnh thắng lớn nhất xem hệ thống còn "Edge" (lợi thế) hay không.
-- [ ] **Kelly Sizing:** Đưa công thức Kelly Fraction vào để tối ưu hóa khối lượng vào lệnh (Stake sizing) cho đội ngũ đầu tư nội bộ.
-
-## THÁNG 6: ĐƯA LÊN PRODUCTION, TÍCH HỢP OLLAMA & MOBILE APP
-*Mục tiêu: Đóng gói AI thành API, dùng Ollama giải thích kèo và thương mại hóa.*
-
-- [ ] **FastAPI Backend:** Xây dựng API Server nội bộ đọc kết quả dự đoán mỗi ngày.
-- [ ] **AI Explainability (Ollama):** Tích hợp Local LLM (`Llama-3.1` hoặc `Qwen-2.5`) qua Ollama để tự động đọc output của LightGBM và soạn báo cáo giải thích lý do vào lệnh.
-- [ ] **Telegram Analyst Bot:** Bot tự động bắn tín hiệu các kèo có Edge > 5% kèm **bài phân tích sinh bởi Ollama** vào group Telegram cho đội ngũ đầu tư tự đánh.
-- [ ] **Mobile App Integration:** Tạo endpoint `/api/v1/premium-signals` đẩy 3-5 dự đoán chuẩn nhất/ngày lên App Flashscore.
-- [ ] **Data Commercialization Prep:** Lên danh sách các API trả phí (Sportmonks) cần mua khi mở rộng quy mô.
-
----
-*Bản kế hoạch này được thiết kế theo đúng triết lý "Vượt Kill Test" của tài liệu Kiến trúc FOQ 1.0.*
+**Mục tiêu Tối thượng:** Phát triển một Nền tảng Ứng dụng Di động (Mobile App) chuyên cung cấp Dữ liệu Phân tích Bóng đá chuyên sâu (xG, Lịch thi đấu, Form) kết hợp hệ thống Dự đoán Điểm Ảo (Gamification). 
+**Cam kết:** Đảm bảo 100% vượt qua quy trình kiểm duyệt khắt khe của **Apple App Store (Guideline 5.3)** và **Google Play**, loại bỏ hoàn toàn các yếu tố cờ bạc (Gambling, Betting Odds, Tín hiệu cược).
 
 ---
 
-## DANH SÁCH THƯ VIỆN & REPOSITORIES (TECH STACK)
-Dưới đây là các Repositories cốt lõi cần clone/tham khảo cho hệ thống:
+## 🏗️ PHÂN TẦNG KIẾN TRÚC (TWO-TIER ARCHITECTURE)
 
-### TIER 1: Bắt buộc (Must-Have)
-| # | Repo | Mục đích | Priority |
-|---|---|---|---|
-| 1 | [LightGBM](https://github.com/microsoft/LightGBM) | ML model predictions | ⭐⭐⭐ |
-| 2 | [XGBoost](https://github.com/dmlc/xgboost) | Alternative to LightGBM | ⭐⭐⭐ |
-| 3 | [Pandas](https://github.com/pandas-dev/pandas) | Data manipulation | ⭐⭐⭐ |
-| 4 | [Polars](https://github.com/pola-rs/polars) | Fast data processing (RAM efficient) | ⭐⭐⭐ |
-| 5 | [FastAPI](https://github.com/tiangolo/fastapi) | API backend (Tháng 6) | ⭐⭐⭐ |
-| 6 | [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy) | ORM cho PostgreSQL | ⭐⭐ |
-| 7 | [Scikit-learn](https://github.com/scikit-learn/scikit-learn) | ML utilities & metrics | ⭐⭐ |
+Sự sống còn của dự án nằm ở việc phân tách rạch ròi giữa hệ thống Backend tính toán ngầm và những gì hiển thị cho người dùng trên App.
 
-### TIER 2: Hỗ trợ chuyên biệt (Nice-to-Have)
-| # | Repo | Mục đích |
-|---|---|---|
-| 8 | [Backtrader](https://github.com/mementum/backtrader) | Backtesting framework |
-| 9 | [SHAP](https://github.com/slundberg/shap) | Model interpretability |
-| 10 | [Optuna](https://github.com/optuna/optuna) | Hyperparameter tuning |
-| 11 | [Python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) | Telegram Bot integration |
-| 12 | [Psycopg2](https://github.com/psycopg/psycopg2) | PostgreSQL driver |
-| 13 | [Ollama](https://github.com/ollama/ollama) | Chạy Local LLM (Llama-3.1/Qwen) trên RTX 3050 |
-| 14 | [Ollama-Python](https://github.com/ollama/ollama-python) | Official Python SDK tích hợp LLM vào code |
+### Tầng 1: Backend Quant Engine (Chạy ngầm nội bộ)
+- Cào dữ liệu, xử lý tính toán dựa trên mô hình toán học (Dixon-Coles, Poisson, Elo).
+- Tạo phân phối bàn thắng (Lambda) và tính xác suất thực tế (Thắng/Hòa/Thua).
+- Tự động đánh giá độ chính xác của AI bằng hàm mất mát **Brier Score / Log-Loss**.
+
+### Tầng 2: Client App (Hiển thị sạch 100%)
+- Chỉ hiển thị: Livescore, Thống kê trực tiếp, Đồ thị xG, và Xác suất trận đấu dạng Analytics (VD: Home 55% - Draw 25% - Away 20%).
+- Hệ thống Minigame Dự đoán tỷ số bằng **Điểm Ảo (Virtual Points)**, vinh danh trên Bảng xếp hạng. Tuyệt đối không quy đổi ra tiền thật.
+
+---
+
+## 🗓️ LỘ TRÌNH 6 THÁNG TRIỂN KHAI
+
+### THÁNG 1: XÂY DỰNG HẠ TẦNG DỮ LIỆU HỢP PHÁP (COMPLIANT DATA)
+*Quy tắc: Không dùng dữ liệu Scraping vi phạm bản quyền để tránh bị Apple gỡ App.*
+- [ ] **Lựa chọn Data Provider:** Kết nối API chính thức từ các nguồn sạch (`football-data.org`, `TheSportsDB`, hoặc `Sportmonks`).
+- [ ] **Data Mapping:** Tạo bảng `TEAM_MASTER` và `MATCH_MASTER` để đồng bộ ID giải đấu và đội bóng.
+- [ ] **Database Setup:** Thiết lập PostgreSQL lưu trữ Fixtures (Lịch thi đấu), Results (Kết quả), và Live Events (Thẻ phạt, bàn thắng).
+
+### THÁNG 2: LÕI TOÁN HỌC & AI THỐNG KÊ (MATH CORE)
+*Quy tắc: Không dùng Machine Learning dự đoán Kèo, dùng Toán học để phân tích thế trận.*
+- [ ] **Dixon-Coles & Poisson:** Chuyển hóa dữ liệu lịch sử thành sức mạnh Tấn công/Phòng ngự của mỗi đội.
+- [ ] **Tính toán Xác suất (Win Probabilities):** Xuất ra tỷ lệ phần trăm (Thắng/Hòa/Thua) cho mỗi trận đấu dựa trên phân phối bàn thắng (Lambda).
+- [ ] **Tính điểm Elo:** Cập nhật bảng xếp hạng sức mạnh (Power Ranking) liên tục sau mỗi vòng đấu.
+- [ ] **Backend Validation:** Dùng **Brier Score** để tự động chấm điểm độ chính xác của mô hình Dixon-Coles nội bộ.
+
+### THÁNG 3: API BACKEND & TÓM TẮT TRẬN ĐẤU (CONTENT GENERATION)
+- [ ] **FastAPI Backend:** Xây dựng hệ thống REST API trả dữ liệu Livescore, Xác suất, và xG cho App Mobile.
+- [ ] **Data Insights / Narrative:** Tích hợp logic (dùng Template hoặc AI nhỏ) tự động sinh ra câu tóm tắt trận đấu. 
+  - *Ví dụ Hợp lệ:* "Arsenal đang có phong độ cao tại sân nhà (Elo chênh lệch +200), tỷ lệ kiểm soát bóng kỳ vọng lên tới 65%." 
+  - *Tuyệt đối cấm:* Các từ khóa "Odds", "Bet", "Kèo", "Vào tiền".
+
+### THÁNG 4: HỆ THỐNG GAMIFICATION (ĐIỂM ẢO & BẢNG XẾP HẠNG)
+*Đây là "Vũ khí bí mật" để tăng Retention Rate và Monetization.*
+- [ ] **Virtual Currency Logic:** Tạo bảng `user_wallets` lưu trữ Điểm Ảo (Coins).
+- [ ] **Daily Rewards:** Cơ chế tặng 100 điểm khi User đăng nhập mỗi ngày.
+- [ ] **Prediction Engine:** Cho phép User dùng Điểm Ảo đặt cược vào kết quả trận đấu. Thắng được cộng điểm, thua mất điểm.
+- [ ] **Leaderboard:** Xây dựng API Bảng xếp hạng Top Người Dự Đoán Xuất Sắc Nhất Tuần/Tháng.
+
+### THÁNG 5: MOBILE APP UI/UX & MONETIZATION
+- [ ] **App Development:** Tích hợp API vào giao diện Flashscore App (Hiển thị danh sách trận, chi tiết trận, bảng xếp hạng).
+- [ ] **AdMob Integration:** Cài đặt Banner Ads ở màn hình chính và Interstitial Ads khi người dùng chốt dự đoán.
+- [ ] **In-App Purchase (IAP):** Tích hợp Google Play Billing / Apple StoreKit bán các gói Nạp Điểm Ảo (Ví dụ: $0.99 = 1,000 Coins). Phải có thông báo từ chối trách nhiệm (Disclaimer): *Điểm ảo chỉ dùng để giải trí, không có giá trị quy đổi.*
+
+### THÁNG 6: KIỂM DUYỆT APP STORE & SOFT LAUNCH
+- [ ] **Kiểm duyệt Pháp lý:** Scan toàn bộ App/Codebase để loại bỏ các từ khóa cấm.
+- [ ] **Apple/Google Submission:** Chuẩn bị nội dung mô tả App rõ ràng là "Thể thao & Giải trí", cấu hình độ tuổi phù hợp (Age Rating).
+- [ ] **Soft Launch:** Phát hành thử nghiệm cho 1,000 users đầu tiên, theo dõi Crashlytics và tối ưu hóa tốc độ load API.
+
+---
+
+## 💰 BÀI TOÁN KINH DOANH (BUSINESS MODEL)
+
+Sự thay đổi mô hình giúp dự án tiếp cận hàng triệu Fan bóng đá thay vì nhóm nhỏ Trader:
+1. **Quảng Cáo (Ads Revenue):** Nguồn thu chính đến từ AdMob khi lượng Active Users hàng ngày (DAU) lớn nhờ xem Livescore và check Bảng xếp hạng.
+2. **In-App Purchase (IAP):** Người dùng khát khao leo rank Leaderboard sẽ trả tiền thật để mua Điểm Ảo. Lợi nhuận gộp lên tới 70% (Sau khi trừ 30% phí Apple/Google).
+3. **Chi phí Vận hành (OPEX):** Cực thấp. Chỉ tốn phí Server và phí duy trì API Data Thể thao hợp pháp. Không rủi ro cháy tài khoản.
