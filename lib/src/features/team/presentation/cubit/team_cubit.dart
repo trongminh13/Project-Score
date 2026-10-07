@@ -22,22 +22,26 @@ class TeamCubit extends Cubit<TeamState> {
     await teamResult.fold(
       (failure) async => emit(TeamError(failure.message)),
       (details) async {
-        // Fetch fixtures and squad in parallel
+        // Fetch fixtures, squad, and statistics in parallel
         final results = await Future.wait([
           soccerRepository.getTeamFixtures(teamId: teamId),
           teamRepository.getTeamSquad(teamId),
+          teamRepository.getTeamStatistics(teamId),
         ]);
         
         final fixturesResult = results[0] as dynamic;
         final squadResult = results[1] as dynamic;
+        final statsResult = results[2] as dynamic;
         
         final fixtures = fixturesResult.fold((_) => [], (f) => f);
         final squad = squadResult.fold((_) => [], (s) => s);
+        final stats = statsResult.fold((_) => null, (s) => s);
         
         final mergedDetails = TeamDetails(
           team: details.team,
           fixtures: fixtures,
           squad: squad,
+          statistics: stats,
         );
         emit(TeamLoaded(teamDetails: mergedDetails));
       },
