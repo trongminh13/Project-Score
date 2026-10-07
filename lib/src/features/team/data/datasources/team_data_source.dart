@@ -18,8 +18,8 @@ class TeamDataSourceImpl implements TeamDataSource {
   Future<TeamDetails> getTeamDetails(int teamId) async {
     // Lấy thông tin cơ bản của đội bóng
     final response = await apiClient.get(url: '/teams', queryParams: {'id': teamId});
-    final data = response.data['response'] as List;
-    if (data.isEmpty) throw Exception('Team not found');
+    final data = response.data['response'] as List?;
+    if (data == null || data.isEmpty) throw Exception('Team not found');
     
     final teamJson = data[0]['team'];
     return TeamDetails(
@@ -33,11 +33,17 @@ class TeamDataSourceImpl implements TeamDataSource {
 
   @override
   Future<List<Player>> getTeamSquad(int teamId) async {
-    final response = await apiClient.get(url: '/players/squads', queryParams: {'team': teamId});
-    final data = response.data['response'] as List;
-    if (data.isEmpty) return [];
-    
-    final playersJson = data[0]['players'] as List;
-    return playersJson.map((json) => PlayerModel.fromJson(json)).toList();
+    try {
+      final response = await apiClient.get(url: '/players/squads', queryParams: {'team': teamId});
+      final data = response.data['response'] as List?;
+      if (data == null || data.isEmpty) return [];
+      
+      final playersJson = data[0]['players'] as List?;
+      if (playersJson == null) return [];
+      
+      return playersJson.map((json) => PlayerModel.fromJson(json)).toList();
+    } catch (e) {
+      return []; // Trả về mảng rỗng nếu có lỗi API để không làm crash màn hình Team Details
+    }
   }
 }
