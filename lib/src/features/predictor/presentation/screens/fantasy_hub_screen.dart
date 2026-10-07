@@ -13,6 +13,7 @@ class FantasyHubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPremium = context.watch<AuthProvider>().isPremium;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,31 +41,28 @@ class FantasyHubScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const _PremiumLeagueItem(
-                  isPremium: false,
+                _PremiumLeagueItem(
+                  isPremium: isPremium,
                   name: 'La Liga',
-                  logoUrl:
-                      'https://media.api-sports.io/football/leagues/140.png',
+                  logoUrl: 'https://media.api-sports.io/football/leagues/140.png',
                   leagueId: '140',
                 ),
-                const _PremiumLeagueItem(
-                  isPremium: false,
+                _PremiumLeagueItem(
+                  isPremium: isPremium,
                   name: 'Champions League',
                   logoUrl: 'https://media.api-sports.io/football/leagues/2.png',
                   leagueId: '2',
                 ),
-                const _PremiumLeagueItem(
-                  isPremium: false,
+                _PremiumLeagueItem(
+                  isPremium: isPremium,
                   name: 'Bundesliga',
-                  logoUrl:
-                      'https://media.api-sports.io/football/leagues/78.png',
+                  logoUrl: 'https://media.api-sports.io/football/leagues/78.png',
                   leagueId: '78',
                 ),
-                const _PremiumLeagueItem(
-                  isPremium: false,
+                _PremiumLeagueItem(
+                  isPremium: isPremium,
                   name: 'Serie A',
-                  logoUrl:
-                      'https://media.api-sports.io/football/leagues/135.png',
+                  logoUrl: 'https://media.api-sports.io/football/leagues/135.png',
                   leagueId: '135',
                 ),
               ],
@@ -214,6 +212,7 @@ class _PremiumLeagueItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPremium = context.watch<AuthProvider>().isPremium;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: InkWell(

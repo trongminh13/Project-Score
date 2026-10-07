@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:live_score/src/core/constants/app_constants.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import '../providers/auth_provider.dart';
@@ -26,7 +27,7 @@ class _PredictionDialogState extends State<PredictionDialog> {
     
     try {
       final response = await http.post(
-        Uri.parse('http://127.0.0.1:8000/api/v1/gamification/predict/place'),
+        Uri.parse(Uri.parse('${AppConstants.backendBaseUrl}/gamification/predict/place').toString()),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${auth.token}',

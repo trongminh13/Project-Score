@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:live_score/src/core/constants/app_constants.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -26,7 +27,7 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
     setState(() => _isLoading = true);
     try {
       final res = await http.post(
-        Uri.parse('http://127.0.0.1:8000/api/v1/gamification/upgrade-premium'),
+        Uri.parse(Uri.parse('${AppConstants.backendBaseUrl}/gamification/upgrade-premium').toString()),
         headers: {'Authorization': 'Bearer ${auth.token}'},
       );
       final data = jsonDecode(res.body);
