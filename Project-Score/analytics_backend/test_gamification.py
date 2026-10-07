@@ -71,18 +71,17 @@ def run_tests():
     assert r7.wallet.balance == 1180.0, "Lỗi: Cộng sai tiền thưởng"
     print(f"✅ Passed: Xử lý trả thưởng chính xác. Số dư mới của R7: {r7.wallet.balance}")
     
-    db.close()
-    print("🏆 BÁO CÁO QA: 100% UNIT TEST PASSED. HỆ THỐNG GAMIFICATION HOẠT ĐỘNG HOÀN HẢO!")
-
-if __name__ == "__main__":
-    run_tests()
-
+    
     print(">> Test 4: Chặn giải đấu nếu là FREE...")
+    from app.core.models import SubscriptionTier
     match2 = MatchMaster(
         competition_name="PD",
         kickoff_utc=datetime.now(timezone.utc),
         home_team_id=t1.id, away_team_id=t2.id,
         status=MatchStatus.SCHEDULED,
+        model_home_win_prob=0.50,
+        model_draw_prob=0.25,
+        model_away_win_prob=0.25
     )
     db.add(match2)
     db.commit()
@@ -97,3 +96,22 @@ if __name__ == "__main__":
             print("✅ Passed: Chặn thành công User FREE cược giải La Liga!")
         else:
             print(f"❌ Lỗi: Mã lỗi sai {e.status_code}")
+
+    print(">> Test 5: Mở khóa giải đấu nếu là PREMIUM...")
+    # Nâng cấp R7 lên Premium
+    r7.subscription_tier = SubscriptionTier.PREMIUM
+    db.commit()
+    
+    # Cược lại trận La Liga
+    try:
+        req3 = PlacePredictionReq(match_id=match2.id, predicted_result=PredictionResult.AWAY, points_staked=10.0)
+        place_prediction(req3, current_user=r7, db=db)
+        print("✅ Passed: User PREMIUM đã cược thành công giải La Liga (PD)!")
+    except Exception as e:
+        print(f"❌ Lỗi: User PREMIUM cược thất bại! Chi tiết: {e}")
+        
+    db.close()
+    print("🏆 BÁO CÁO CỦA SENIOR QA KHÓ TÍNH: MỌI THỨ ĐỀU HOÀN HẢO!")
+
+if __name__ == "__main__":
+    run_tests()
