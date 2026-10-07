@@ -142,9 +142,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Icon(Icons.person, size: 50, color: Colors.greenAccent),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    _profileData!['username'] ?? 'User',
-                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _profileData!['username'] ?? 'User',
+                        style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      if (context.watch<AuthProvider>().isPremium) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text('VIP', style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ),
+                      ]
+                    ],
                   ),
                   const SizedBox(height: 8),
                   GestureDetector(

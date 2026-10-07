@@ -40,24 +40,28 @@ class FantasyHubScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const _LockedLeagueItem(
+                const _PremiumLeagueItem(
+                  isPremium: false,
                   name: 'La Liga',
                   logoUrl:
                       'https://media.api-sports.io/football/leagues/140.png',
                   leagueId: '140',
                 ),
-                const _LockedLeagueItem(
+                const _PremiumLeagueItem(
+                  isPremium: false,
                   name: 'Champions League',
                   logoUrl: 'https://media.api-sports.io/football/leagues/2.png',
                   leagueId: '2',
                 ),
-                const _LockedLeagueItem(
+                const _PremiumLeagueItem(
+                  isPremium: false,
                   name: 'Bundesliga',
                   logoUrl:
                       'https://media.api-sports.io/football/leagues/78.png',
                   leagueId: '78',
                 ),
-                const _LockedLeagueItem(
+                const _PremiumLeagueItem(
+                  isPremium: false,
                   name: 'Serie A',
                   logoUrl:
                       'https://media.api-sports.io/football/leagues/135.png',
@@ -239,7 +243,7 @@ class _PremiumLeagueItem extends StatelessWidget {
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
                     onPressed: () {
                       Navigator.pop(ctx);
-                      // TODO: Navigate to Upgrade Screen
+                      context.push(Routes.premiumUpgrade);
                     },
                     child: const Text('Nâng cấp ngay', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                   ),

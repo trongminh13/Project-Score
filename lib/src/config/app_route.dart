@@ -1,4 +1,5 @@
 import '../features/profile/presentation/screens/profile_screen.dart';
+import '../features/profile/presentation/screens/premium_upgrade_screen.dart';
 import '../core/domain/entities/teams.dart';
 import '../features/team/presentation/cubit/team_cubit.dart';
 import '../features/team/presentation/screens/team_details_screen.dart';
@@ -41,6 +42,7 @@ class Routes {
   static const String predictorSuccess = '/predictor-success';
   static const String teamDetails = '/team_details/:id';
   static const String profile = '/profile';
+  static const String premiumUpgrade = '/premium-upgrade';
 }
 
 class AppRouter {
@@ -124,6 +126,13 @@ class AppRouter {
             },
           ),
         ],
+      ),
+      GoRoute(
+              GoRoute(
+        path: Routes.premiumUpgrade,
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(child: PremiumUpgradeScreen());
+        },
       ),
       GoRoute(
         path: Routes.profile,

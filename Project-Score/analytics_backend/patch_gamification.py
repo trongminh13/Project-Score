@@ -4,38 +4,37 @@ filepath = "app/api/v1/gamification.py"
 with open(filepath, "r") as f:
     content = f.read()
 
-# 1. Import SubscriptionTier
-if "SubscriptionTier" not in content:
-    content = content.replace("app.core.models import User", "app.core.models import User, SubscriptionTier")
-
-# 2. Update /users/me
-old_me = """    return {
-        "success": True,
-        "username": current_user.username,"""
-new_me = """    return {
-        "success": True,
-        "username": current_user.username,
-        "subscription_tier": current_user.subscription_tier,"""
-if '"subscription_tier"' not in content:
-    content = content.replace(old_me, new_me, 1)
-
-# 3. Update /predict/place
-old_place = """    match = db.query(MatchMaster).filter(MatchMaster.id == req.match_id).first()
-    if not match or match.status != MatchStatus.SCHEDULED:
-        raise HTTPException(status_code=400, detail="Trận đấu đã bắt đầu hoặc không tồn tại!")
+new_endpoint = """
+@router.post("/upgrade-premium")
+def upgrade_premium(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.subscription_tier == SubscriptionTier.PREMIUM:
+        raise HTTPException(status_code=400, detail="Tài khoản đã là Premium rồi!")
         
-    multiplier = 1.0"""
-new_place = """    match = db.query(MatchMaster).filter(MatchMaster.id == req.match_id).first()
-    if not match or match.status != MatchStatus.SCHEDULED:
-        raise HTTPException(status_code=400, detail="Trận đấu đã bắt đầu hoặc không tồn tại!")
+    # Update Tier
+    current_user.subscription_tier = SubscriptionTier.PREMIUM
+    
+    # Bonus points for upgrading
+    wallet = db.query(UserWallet).filter(UserWallet.user_id == current_user.id).with_for_update().first()
+    if wallet:
+        bonus_amount = 5000.0
+        wallet.balance += bonus_amount
+        tx = WalletTransaction(wallet_id=wallet.id, amount=bonus_amount, transaction_type=TransactionType.IAP_DEPOSIT, description="Thưởng nâng cấp Premium")
+        db.add(tx)
         
-    # PREMIUM CHECK
-    if current_user.subscription_tier == SubscriptionTier.FREE and match.competition_name != "PL":
-        raise HTTPException(status_code=403, detail="Bạn cần nâng cấp Premium để cược giải đấu này!")
-        
-    multiplier = 1.0"""
-if "PREMIUM CHECK" not in content:
-    content = content.replace(old_place, new_place, 1)
+    # Send Notification
+    notif = Notification(
+        user_id=current_user.id,
+        title="Nâng cấp VIP thành công 👑",
+        message="Chào mừng bạn đến với QUANTSCORE Premium! Đã mở khóa mọi tính năng và tặng bạn 5000 điểm.",
+        type=NotificationType.GAMIFICATION
+    )
+    db.add(notif)
+    
+    db.commit()
+    return {"message": "Nâng cấp Premium thành công!", "new_balance": wallet.balance if wallet else 0}
+"""
 
-with open(filepath, "w") as f:
-    f.write(content)
+if "/upgrade-premium" not in content:
+    content += new_endpoint
+    with open(filepath, "w") as f:
+        f.write(content)
