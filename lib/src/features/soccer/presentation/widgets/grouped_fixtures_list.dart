@@ -301,7 +301,7 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
     final formattedTime =
         localTime == null
             ? context.l10n.tbd
-            : localTime.formatForLocale(context.localeName, pattern: 'h:mm a');
+            : '${localTime.formatForLocale(context.localeName, pattern: 'dd/MM')} ${localTime.formatForLocale(context.localeName, pattern: 'HH:mm')}';
 
     return InkWell(
       onTap: () {

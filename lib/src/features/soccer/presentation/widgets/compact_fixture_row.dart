@@ -28,23 +28,30 @@ class CompactFixtureRow extends StatelessWidget {
     final isLive = fixture.status.isLive;
     final goalsAvailable = homeTeam.score != -1 && awayTeam.score != -1;
 
-    String leftText = '';
-    Color leftColor = context.colorsExt.textMuted;
-    FontWeight leftWeight = FontWeight.normal;
+    String dateText = '';
+    String timeOrStatusText = '';
+    Color statusColor = context.colorsExt.textMuted;
+    FontWeight statusWeight = FontWeight.normal;
+
+    if (fixture.startTime != null) {
+      dateText = fixture.startTime!.formatForLocale(context.localeName, pattern: 'dd/MM');
+    }
 
     if (isLive) {
-      leftText = fixture.gameTimeDisplay.isNotEmpty 
+      timeOrStatusText = fixture.gameTimeDisplay.isNotEmpty 
           ? fixture.gameTimeDisplay 
           : (fixture.gameTime != null ? "${fixture.gameTime}'" : 'Live');
-      leftColor = context.colors.error; // Red color for live
-      leftWeight = FontWeight.bold;
+      statusColor = context.colors.error; // Red color for live
+      statusWeight = FontWeight.bold;
     } else if (fixture.status.name == 'ended') {
-      leftText = 'FT';
-      leftColor = context.colorsExt.textMuted;
+      timeOrStatusText = 'FT';
+      statusColor = context.colorsExt.textMuted;
+      statusWeight = FontWeight.w600;
     } else if (fixture.startTime != null) {
-      leftText = fixture.startTime!.formatForLocale(context.localeName, pattern: 'HH:mm');
+      timeOrStatusText = fixture.startTime!.formatForLocale(context.localeName, pattern: 'HH:mm');
+      statusWeight = FontWeight.w500;
     } else {
-      leftText = context.l10n.tbd;
+      timeOrStatusText = context.l10n.tbd;
     }
 
     return InkWell(
@@ -59,18 +66,36 @@ class CompactFixtureRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // LEFT COLUMN: Time or Status
+            // LEFT COLUMN: Date & Time / Status
             SizedBox(
-              width: 44,
-              child: Text(
-                leftText,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontSize: 11,
-                  color: leftColor,
-                  fontWeight: leftWeight,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              width: 50,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (dateText.isNotEmpty)
+                    Text(
+                      dateText,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontSize: 10,
+                        color: context.colorsExt.textMuted.withValues(alpha: 0.8),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  const SizedBox(height: 2),
+                  Text(
+                    timeOrStatusText,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: 11,
+                      color: statusColor,
+                      fontWeight: statusWeight,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
             

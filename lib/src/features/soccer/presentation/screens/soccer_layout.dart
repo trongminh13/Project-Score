@@ -1,5 +1,10 @@
 import 'package:live_score/src/core/widgets/app_background_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../../providers/auth_provider.dart';
+import '../../../../../widgets/auth_dialog.dart';
+import '../../../../../providers/notification_provider.dart';
+import '../../../notifications/presentation/screens/notification_screen.dart';
 import 'package:live_score/src/core/constants/app_spacing.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_score/src/config/app_route.dart';
@@ -29,17 +34,22 @@ class SoccerLayout extends StatelessWidget {
       _ => 0,
     };
 
-    return AppBackgroundWrapper(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
+    return Scaffold(
+        // backgroundColor: Colors.transparent,
         extendBody: true,
         appBar: AppBar(
           toolbarHeight: 56,
           elevation: 0,
           backgroundColor: context.colors.surface.withValues(alpha: 0.85),
         leading: IconButton(
-          icon: const Icon(Icons.account_circle_outlined),
-          onPressed: () {},
+          icon: Icon(context.watch<AuthProvider>().isAuthenticated ? Icons.account_circle : Icons.account_circle_outlined, color: context.watch<AuthProvider>().isAuthenticated ? Colors.greenAccent : null),
+          onPressed: () {
+              if (context.read<AuthProvider>().isAuthenticated) {
+                context.push(Routes.profile);
+              } else {
+                showDialog(context: context, builder: (ctx) => const AuthDialog());
+              }
+            },
         ),
         title: SizedBox(
           height: 40,
@@ -51,8 +61,14 @@ class SoccerLayout extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
+            icon: Badge(
+              isLabelVisible: context.watch<NotificationProvider>().unreadCount > 0,
+              label: Text(context.watch<NotificationProvider>().unreadCount.toString()),
+              child: const Icon(Icons.notifications_outlined),
+            ),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen()));
+            },
           ),
           IconButton(
             onPressed: () => context.push(Routes.settings),
@@ -117,7 +133,6 @@ class SoccerLayout extends StatelessWidget {
                 currentIndex: currentIndex,
                 onTap: (index) => _onTap(context, index),
               ),
-      ),
     );
   }
 

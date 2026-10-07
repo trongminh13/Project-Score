@@ -54,10 +54,7 @@ class ViewDayFixtures extends StatelessWidget {
           final formattedTime =
               localTime == null
                   ? l10n.tbd
-                  : localTime.formatForLocale(
-                    context.localeName,
-                    pattern: 'h:mm a',
-                  );
+                  : '${localTime.formatForLocale(context.localeName, pattern: 'dd/MM')} ${localTime.formatForLocale(context.localeName, pattern: 'HH:mm')}';
 
           return InkWell(
             splashColor: Colors.transparent,

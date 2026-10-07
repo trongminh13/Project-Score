@@ -32,7 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "aggregateScore": m0,
     "all": MessageLookupByLibrary.simpleMessage("All"),
     "allLeaguesTooltip": MessageLookupByLibrary.simpleMessage("All leagues"),
-    "appName": MessageLookupByLibrary.simpleMessage("Score DV"),
+    "appName": MessageLookupByLibrary.simpleMessage("QUANTSCORE"),
     "appVersion": MessageLookupByLibrary.simpleMessage("App Version"),
     "appearance": MessageLookupByLibrary.simpleMessage("Appearance"),
     "appearanceDescription": MessageLookupByLibrary.simpleMessage(
@@ -84,7 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lineups": MessageLookupByLibrary.simpleMessage("Lineups"),
     "liveFallback": MessageLookupByLibrary.simpleMessage("LIVE"),
     "liveFixtures": MessageLookupByLibrary.simpleMessage("Live Fixtures"),
-    "liveScore": MessageLookupByLibrary.simpleMessage("Score DV"),
+    "liveScore": MessageLookupByLibrary.simpleMessage("QUANTSCORE"),
     "lostShort": MessageLookupByLibrary.simpleMessage("L"),
     "noEvents": MessageLookupByLibrary.simpleMessage(
       "Events are not available yet",

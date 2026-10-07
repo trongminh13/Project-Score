@@ -34,7 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "allLeaguesTooltip": MessageLookupByLibrary.simpleMessage(
       "Tất cả các giải đấu",
     ),
-    "appName": MessageLookupByLibrary.simpleMessage("Score DV"),
+    "appName": MessageLookupByLibrary.simpleMessage("QUANTSCORE"),
     "appVersion": MessageLookupByLibrary.simpleMessage("Phiên bản"),
     "appearance": MessageLookupByLibrary.simpleMessage("Giao diện"),
     "appearanceDescription": MessageLookupByLibrary.simpleMessage(
@@ -86,7 +86,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lineups": MessageLookupByLibrary.simpleMessage("Đội hình"),
     "liveFallback": MessageLookupByLibrary.simpleMessage("TRỰC TIẾP"),
     "liveFixtures": MessageLookupByLibrary.simpleMessage("Đang diễn ra"),
-    "liveScore": MessageLookupByLibrary.simpleMessage("Score DV"),
+    "liveScore": MessageLookupByLibrary.simpleMessage("QUANTSCORE"),
     "lostShort": MessageLookupByLibrary.simpleMessage("B"),
     "noEvents": MessageLookupByLibrary.simpleMessage("Sự kiện chưa có sẵn"),
     "noFixtures": MessageLookupByLibrary.simpleMessage(

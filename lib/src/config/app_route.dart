@@ -1,3 +1,4 @@
+import '../features/profile/presentation/screens/profile_screen.dart';
 import '../core/domain/entities/teams.dart';
 import '../features/team/presentation/cubit/team_cubit.dart';
 import '../features/team/presentation/screens/team_details_screen.dart';
@@ -8,6 +9,7 @@ import '../features/predictor/presentation/cubit/predictor_round_cubit.dart';
 import '../features/predictor/presentation/screens/predictor_main_screen.dart';
 import '../features/predictor/presentation/screens/fantasy_hub_screen.dart';
 import '../features/predictor/presentation/screens/predictor_success_screen.dart';
+import '../features/splash/presentation/screens/animated_splash_screen.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +29,7 @@ import '../features/soccer/presentation/screens/soccer_screen.dart';
 import '../features/soccer/presentation/screens/standings_screen.dart';
 
 class Routes {
+  static const String splash = '/splash';
   static const String soccer = '/soccer';
   static const String fixtures = '/fixtures';
   static const String standings = '/standings';
@@ -37,12 +40,19 @@ class Routes {
   static const String predictorGame = '/predictor/game';
   static const String predictorSuccess = '/predictor-success';
   static const String teamDetails = '/team_details/:id';
+  static const String profile = '/profile';
 }
 
 class AppRouter {
   static final router = GoRouter(
-    initialLocation: Routes.soccer,
+    initialLocation: Routes.splash,
     routes: [
+      GoRoute(
+        path: Routes.splash,
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(child: AnimatedSplashScreen());
+        },
+      ),
       ShellRoute(
         builder: (_, _, child) {
           return MultiBlocProvider(
@@ -114,6 +124,12 @@ class AppRouter {
             },
           ),
         ],
+      ),
+      GoRoute(
+        path: Routes.profile,
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(child: ProfileScreen());
+        },
       ),
       GoRoute(
         path: Routes.fixtureDetails,

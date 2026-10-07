@@ -1,6 +1,6 @@
 {
-    "name": "Live Score",
-    "short_name": "Live Score",
+    "name": "QUANTSCORE",
+    "short_name": "QUANTSCORE",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0B1F3A",

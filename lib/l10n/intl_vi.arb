@@ -1,11 +1,11 @@
 {
   "@@locale": "vi",
-  "appName": "Score DV",
+  "appName": "QUANTSCORE",
   "noRouteFound": "Không tìm thấy trang",
   "home": "Trang chủ",
   "fixtures": "Lịch thi đấu",
   "standings": "Bảng xếp hạng",
-  "liveScore": "Score DV",
+  "liveScore": "QUANTSCORE",
   "versus": "vs",
   "statistics": "Thống kê",
   "lineups": "Đội hình",

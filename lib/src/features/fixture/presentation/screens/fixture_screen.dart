@@ -9,6 +9,7 @@ import 'package:live_score/src/core/layout/adaptive_layout.dart';
 import '../../../../core/domain/entities/soccer_fixture.dart';
 import '../../../../core/extensions/context_ext.dart';
 import '../../../../core/l10n/app_l10n.dart';
+import '../../../../../../widgets/prediction_dialog.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/settings_language_listener.dart';
 import '../../domain/entities/fixture_details.dart';
@@ -92,6 +93,24 @@ class _FixtureScreenState extends State<FixtureScreen> {
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,
+        floatingActionButton: FloatingActionButton.extended(
+          backgroundColor: const Color(0xFF6A0DAD),
+          icon: const Icon(Icons.sports_esports, color: Colors.white),
+          label: const Text("CƯỢC", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          onPressed: () async {
+            final msg = await showDialog<String>(
+              context: context,
+              builder: (ctx) => PredictionDialog(
+                matchId: widget.soccerFixture.id,
+                homeName: homeTeam.displayName,
+                awayName: awayTeam.displayName,
+              ),
+            );
+            if (msg != null && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+            }
+          },
+        ),
         appBar: AppBar(
           backgroundColor:
               _appBarOpacity > 0
