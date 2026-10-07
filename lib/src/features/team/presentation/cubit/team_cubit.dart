@@ -19,23 +19,27 @@ class TeamCubit extends Cubit<TeamState> {
     // Fetch team info
     final teamResult = await teamRepository.getTeamDetails(teamId);
     
-    teamResult.fold(
-      (failure) => emit(TeamError(failure.message)),
+    await teamResult.fold(
+      (failure) async => emit(TeamError(failure.message)),
       (details) async {
-        // Fetch fixtures in parallel or sequence, since we need team info first, sequence is fine.
-        final fixturesResult = await soccerRepository.getTeamFixtures(teamId: teamId);
+        // Fetch fixtures and squad in parallel
+        final results = await Future.wait([
+          soccerRepository.getTeamFixtures(teamId: teamId),
+          teamRepository.getTeamSquad(teamId),
+        ]);
         
-        fixturesResult.fold(
-          (failure) => emit(TeamLoaded(teamDetails: details)), // still load team without fixtures
-          (fixtures) {
-            // merge fixtures into TeamDetails
-            final mergedDetails = TeamDetails(
-              team: details.team,
-              fixtures: fixtures,
-            );
-            emit(TeamLoaded(teamDetails: mergedDetails));
-          },
+        final fixturesResult = results[0] as dynamic;
+        final squadResult = results[1] as dynamic;
+        
+        final fixtures = fixturesResult.fold((_) => [], (f) => f);
+        final squad = squadResult.fold((_) => [], (s) => s);
+        
+        final mergedDetails = TeamDetails(
+          team: details.team,
+          fixtures: fixtures,
+          squad: squad,
         );
+        emit(TeamLoaded(teamDetails: mergedDetails));
       },
     );
   }

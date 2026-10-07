@@ -130,14 +130,12 @@ class AppRouter {
         ],
       ),
       GoRoute(
-              GoRoute(
         path: Routes.premiumUpgrade,
         pageBuilder: (context, state) {
           return const NoTransitionPage(child: PremiumUpgradeScreen());
         },
       ),
       GoRoute(
-              GoRoute(
         path: Routes.login,
         pageBuilder: (context, state) {
           return const NoTransitionPage(child: AuthScreen());
