@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, date
 from app.core.models import Notification, NotificationType
 from app.core.database import get_db
-from app.core.models import User, UserWallet, WalletTransaction, TransactionType, UserPrediction, MatchMaster, MatchStatus, PredictionStatus, PredictionResult, TeamMaster
+from app.core.models import User, SubscriptionTier, UserWallet, WalletTransaction, TransactionType, UserPrediction, MatchMaster, MatchStatus, PredictionStatus, PredictionResult, TeamMaster
 from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 from pydantic import BaseModel
 from datetime import timedelta
@@ -92,6 +92,7 @@ def get_my_profile(current_user: User = Depends(get_current_user), db: Session =
     return {
         "success": True,
         "username": current_user.username,
+        "subscription_tier": current_user.subscription_tier,
         "balance": balance,
         "win_rate": win_rate,
         "total_bets": total_bets,
@@ -107,6 +108,10 @@ def place_prediction(req: PlacePredictionReq, current_user: User = Depends(get_c
     match = db.query(MatchMaster).filter(MatchMaster.id == req.match_id).first()
     if not match or match.status != MatchStatus.SCHEDULED:
         raise HTTPException(status_code=400, detail="Trận đấu đã bắt đầu hoặc không tồn tại!")
+        
+    # PREMIUM CHECK
+    if current_user.subscription_tier == SubscriptionTier.FREE and match.competition_name != "PL":
+        raise HTTPException(status_code=403, detail="Bạn cần nâng cấp Premium để cược giải đấu này!")
         
     multiplier = 1.0
     if req.predicted_result == PredictionResult.HOME and match.model_home_win_prob:

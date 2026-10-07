@@ -76,3 +76,24 @@ def run_tests():
 
 if __name__ == "__main__":
     run_tests()
+
+    print(">> Test 4: Chặn giải đấu nếu là FREE...")
+    match2 = MatchMaster(
+        competition_name="PD",
+        kickoff_utc=datetime.now(timezone.utc),
+        home_team_id=t1.id, away_team_id=t2.id,
+        status=MatchStatus.SCHEDULED,
+    )
+    db.add(match2)
+    db.commit()
+    
+    req2 = PlacePredictionReq(match_id=match2.id, predicted_result=PredictionResult.HOME, points_staked=10.0)
+    try:
+        from fastapi import HTTPException
+        place_prediction(req2, current_user=r7, db=db)
+        print("❌ Lỗi: User FREE cược được giải La Liga (PD)!")
+    except HTTPException as e:
+        if e.status_code == 403:
+            print("✅ Passed: Chặn thành công User FREE cược giải La Liga!")
+        else:
+            print(f"❌ Lỗi: Mã lỗi sai {e.status_code}")

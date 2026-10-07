@@ -7,6 +7,7 @@ import 'dart:io' show Platform;
 class AuthProvider with ChangeNotifier {
   String? _token;
   double _balance = 0.0;
+  String _subscriptionTier = "FREE";
   
   // Tự động đổi IP cho Android Emulator (10.0.2.2) hoặc Web/iOS (127.0.0.1)
   String get baseUrl {
@@ -19,6 +20,8 @@ class AuthProvider with ChangeNotifier {
   String? get token => _token;
   double get balance => _balance;
   bool get isAuthenticated => _token != null;
+  String get subscriptionTier => _subscriptionTier;
+  bool get isPremium => _subscriptionTier == "PREMIUM";
 
   // Trả về null nếu thành công, trả về string nếu có lỗi
   Future<String?> login(String username, String password) async {
@@ -79,6 +82,7 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _balance = (data['balance'] as num).toDouble();
+        _subscriptionTier = data['subscription_tier'] ?? "FREE";
         notifyListeners();
       }
     } catch (e) {

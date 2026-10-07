@@ -4,6 +4,11 @@ from datetime import datetime
 import enum
 from app.core.database import Base
 
+
+class SubscriptionTier(str, enum.Enum):
+    FREE = "FREE"
+    PREMIUM = "PREMIUM"
+
 class MatchStatus(str, enum.Enum):
     SCHEDULED = "SCHEDULED"
     LIVE = "LIVE"
@@ -75,6 +80,7 @@ class User(Base):
     username = Column(String(50), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    subscription_tier = Column(Enum(SubscriptionTier), default=SubscriptionTier.FREE)
     
     wallet = relationship("UserWallet", back_populates="user", uselist=False, cascade="all, delete-orphan")
     predictions = relationship("UserPrediction", back_populates="user", cascade="all, delete-orphan")
