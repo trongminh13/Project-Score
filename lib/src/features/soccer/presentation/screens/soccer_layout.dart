@@ -35,21 +35,32 @@ class SoccerLayout extends StatelessWidget {
     };
 
     return Scaffold(
-        // backgroundColor: Colors.transparent,
-        extendBody: true,
-        appBar: AppBar(
-          toolbarHeight: 56,
-          elevation: 0,
-          backgroundColor: context.colors.surface.withValues(alpha: 0.85),
+      // backgroundColor: Colors.transparent,
+      extendBody: true,
+      appBar: AppBar(
+        toolbarHeight: 56,
+        elevation: 0,
+        backgroundColor: context.colors.surface.withValues(alpha: 0.85),
         leading: IconButton(
-          icon: Icon(context.watch<AuthProvider>().isAuthenticated ? Icons.account_circle : Icons.account_circle_outlined, color: context.watch<AuthProvider>().isAuthenticated ? Colors.greenAccent : null),
+          icon: Icon(
+            context.watch<AuthProvider>().isAuthenticated
+                ? Icons.account_circle
+                : Icons.account_circle_outlined,
+            color:
+                context.watch<AuthProvider>().isAuthenticated
+                    ? Colors.greenAccent
+                    : null,
+          ),
           onPressed: () {
-              if (context.read<AuthProvider>().isAuthenticated) {
-                context.push(Routes.profile);
-              } else {
-                showDialog(context: context, builder: (ctx) => const AuthDialog());
-              }
-            },
+            if (context.read<AuthProvider>().isAuthenticated) {
+              context.push(Routes.profile);
+            } else {
+              showDialog(
+                context: context,
+                builder: (ctx) => const AuthDialog(),
+              );
+            }
+          },
         ),
         title: SizedBox(
           height: 40,
@@ -62,12 +73,18 @@ class SoccerLayout extends StatelessWidget {
         actions: [
           IconButton(
             icon: Badge(
-              isLabelVisible: context.watch<NotificationProvider>().unreadCount > 0,
-              label: Text(context.watch<NotificationProvider>().unreadCount.toString()),
+              isLabelVisible:
+                  context.watch<NotificationProvider>().unreadCount > 0,
+              label: Text(
+                context.watch<NotificationProvider>().unreadCount.toString(),
+              ),
               child: const Icon(Icons.notifications_outlined),
             ),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NotificationScreen()),
+              );
             },
           ),
           IconButton(
@@ -80,52 +97,54 @@ class SoccerLayout extends StatelessWidget {
       ),
       body: SafeArea(
         bottom: false,
-        child: Row(
-        children: [
-          if (useRailNavigation) ...[
-            NavigationRail(
-              selectedIndex: currentIndex,
-              onDestinationSelected: (index) => _onTap(context, index),
-              extended: context.isExpandedWindow,
-              backgroundColor: Colors.transparent,
-              labelType:
-                  context.isExpandedWindow
-                      ? NavigationRailLabelType.none
-                      : NavigationRailLabelType.all,
-              destinations: [
-                NavigationRailDestination(
-                  icon: const Icon(Icons.home_outlined),
-                  selectedIcon: const Icon(Icons.home_rounded),
-                  label: Text(l10n.home),
+        child: AppBackgroundWrapper(
+          child: Row(
+            children: [
+              if (useRailNavigation) ...[
+                NavigationRail(
+                  selectedIndex: currentIndex,
+                  onDestinationSelected: (index) => _onTap(context, index),
+                  extended: context.isExpandedWindow,
+                  backgroundColor: Colors.transparent,
+                  labelType:
+                      context.isExpandedWindow
+                          ? NavigationRailLabelType.none
+                          : NavigationRailLabelType.all,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.home_outlined),
+                      selectedIcon: const Icon(Icons.home_rounded),
+                      label: Text(l10n.home),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.sports_soccer_outlined),
+                      selectedIcon: const Icon(Icons.sports_soccer),
+                      label: Text(l10n.fixtures),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.bar_chart_rounded),
+                      selectedIcon: const Icon(Icons.bar_chart_rounded),
+                      label: Text(l10n.standings),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.sports_esports_outlined),
+                      selectedIcon: const Icon(Icons.sports_esports),
+                      label: const Text('Dự đoán'),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.star_border_rounded),
+                      selectedIcon: const Icon(Icons.star_rounded),
+                      label: const Text('Favorites'),
+                    ),
+                  ],
                 ),
-                NavigationRailDestination(
-                  icon: const Icon(Icons.sports_soccer_outlined),
-                  selectedIcon: const Icon(Icons.sports_soccer),
-                  label: Text(l10n.fixtures),
-                ),
-                NavigationRailDestination(
-                  icon: const Icon(Icons.bar_chart_rounded),
-                  selectedIcon: const Icon(Icons.bar_chart_rounded),
-                  label: Text(l10n.standings),
-                ),
-                NavigationRailDestination(
-                  icon: const Icon(Icons.sports_esports_outlined),
-                  selectedIcon: const Icon(Icons.sports_esports),
-                  label: const Text('Dự đoán'),
-                ),
-                NavigationRailDestination(
-                  icon: const Icon(Icons.star_border_rounded),
-                  selectedIcon: const Icon(Icons.star_rounded),
-                  label: const Text('Favorites'),
-                ),
+                const VerticalDivider(width: 1),
               ],
-            ),
-            const VerticalDivider(width: 1),
-          ],
-          Expanded(child: AdaptiveContentArea(child: child)),
-        ],
+              Expanded(child: AdaptiveContentArea(child: child)),
+            ],
+          ),
+        ),
       ),
-    ),
       bottomNavigationBar:
           useRailNavigation
               ? null
@@ -181,18 +200,18 @@ class _FloatingBottomNav extends StatelessWidget {
               ),
             ],
           ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minWidth: MediaQuery.of(context).size.width - AppSpacing.l * 2,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                    _NavItem(
-                      icon: Icons.home_outlined,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: MediaQuery.of(context).size.width - AppSpacing.l * 2,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _NavItem(
+                    icon: Icons.home_outlined,
                     activeIcon: Icons.home_rounded,
                     label: l10n.home,
                     isSelected: currentIndex == 0,
@@ -226,11 +245,11 @@ class _FloatingBottomNav extends StatelessWidget {
                     isSelected: currentIndex == 4,
                     onTap: () => onTap(4),
                   ),
-                  ],
-                  ),
-                ),
+                ],
               ),
             ),
+          ),
+        ),
       ),
     );
   }
@@ -294,4 +313,3 @@ class _NavItem extends StatelessWidget {
     );
   }
 }
-

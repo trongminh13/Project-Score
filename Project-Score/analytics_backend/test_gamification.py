@@ -44,8 +44,8 @@ def run_tests():
     db.commit()
     
     # R7 cược 200 điểm vào Man Utd (Cửa 50% -> Multiplier ~ 2.0 * 0.95 (phế) = 1.9)
-    req = PlacePredictionReq(user_id=r7.id, match_id=match.id, predicted_result=PredictionResult.HOME, points_staked=200.0)
-    res = place_prediction(req, db)
+    req = PlacePredictionReq(match_id=match.id, predicted_result=PredictionResult.HOME, points_staked=200.0)
+    res = place_prediction(req, current_user=r7, db=db)
     db.refresh(r7.wallet)
     
     assert r7.wallet.balance == 800.0, "Lỗi: Không trừ đúng tiền trong ví"

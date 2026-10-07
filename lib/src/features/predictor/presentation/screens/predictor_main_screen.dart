@@ -12,6 +12,7 @@ class PredictorMainScreen extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           title: Text(
@@ -22,7 +23,7 @@ class PredictorMainScreen extends StatelessWidget {
             ),
           ),
           centerTitle: true,
-          backgroundColor: Colors.transparent,
+          backgroundColor: const Color(0xFF182235),
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
           bottom: const TabBar(
@@ -49,22 +50,41 @@ class PredictorMainScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF2A0845), Color(0xFF6441A5)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: const SafeArea(
-            bottom: false,
-            child: TabBarView(
-              children: [PredictorPredictView(), AiAnalysisView()],
-            ),
+        body: const SafeArea(
+          bottom: false,
+          child: TabBarView(
+            children: [
+              _PredictorTabSurface(child: PredictorPredictView()),
+              _AnalysisTabSurface(child: AiAnalysisView()),
+            ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PredictorTabSurface extends StatelessWidget {
+  final Widget child;
+
+  const _PredictorTabSurface({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return child;
+  }
+}
+
+class _AnalysisTabSurface extends StatelessWidget {
+  final Widget child;
+
+  const _AnalysisTabSurface({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [const SizedBox.shrink(), child],
     );
   }
 }
