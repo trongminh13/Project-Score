@@ -2,7 +2,7 @@ import 'package:live_score/src/core/widgets/app_background_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../providers/auth_provider.dart';
-import '../../../../../widgets/auth_dialog.dart';
+
 import '../../../../../providers/notification_provider.dart';
 import '../../../notifications/presentation/screens/notification_screen.dart';
 import 'package:live_score/src/core/constants/app_spacing.dart';
@@ -55,10 +55,7 @@ class SoccerLayout extends StatelessWidget {
             if (context.read<AuthProvider>().isAuthenticated) {
               context.push(Routes.profile);
             } else {
-              showDialog(
-                context: context,
-                builder: (ctx) => const AuthDialog(),
-              );
+              context.push(Routes.login);
             }
           },
         ),
