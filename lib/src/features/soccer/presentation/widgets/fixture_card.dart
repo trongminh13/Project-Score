@@ -7,6 +7,7 @@ import 'package:live_score/src/core/constants/app_spacing.dart';
 
 import '../../../../core/domain/entities/soccer_fixture.dart';
 import '../../../../core/extensions/context_ext.dart';
+import '../../../../core/extensions/date_time.dart';
 import '../../../../core/l10n/app_l10n.dart';
 import '../../../../core/widgets/custom_image.dart';
 import '../../../../core/widgets/match_time_with_progress.dart';
@@ -188,7 +189,7 @@ class FixtureCard extends StatelessWidget {
                             borderRadius: AppBorderRadius.smallAll,
                           ),
                           child: Text(
-                            fixtureTime ?? context.l10n.tbd,
+                            fixtureTime ?? (soccerFixture.startTime != null ? '${soccerFixture.startTime!.formatForLocale(context.localeName, pattern: 'dd/MM')} ${soccerFixture.startTime!.formatForLocale(context.localeName, pattern: 'HH:mm')}' : context.l10n.tbd),
                             style: theme.textTheme.labelMedium?.copyWith(
                               color: context.colors.primary,
                               fontWeight: FontWeight.w700,
