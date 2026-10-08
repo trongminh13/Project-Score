@@ -48,7 +48,7 @@ class _HomeLiveFixturesDashboardState extends State<HomeLiveFixturesDashboard> {
           current is SoccerTodayFixturesLoadFailure,
       builder: (context, state) {
         List<SoccerFixture> displayFixtures = [];
-        bool isLoading = state is SoccerTodayFixturesLoading;
+        bool isLoading = state is SoccerTodayFixturesLoading && !state.isTimerLoading;
 
         if (state is SoccerTodayFixturesLoaded) {
           displayFixtures = _isLiveOnly ? state.liveFixtures : state.todayFixtures;
@@ -79,10 +79,11 @@ class _HomeLiveFixturesDashboardState extends State<HomeLiveFixturesDashboard> {
               )
             else
               GroupedFixturesList(
-            useCompactLayout: true,
+                useCompactLayout: true,
                 fixtures: displayFixtures,
                 showLeagueLogo: true,
                 isScrollable: false,
+                autoScrollToUpcoming: false,
               ).animate().fade().slideY(begin: 0.1),
           ],
         );

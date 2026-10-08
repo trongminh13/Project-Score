@@ -68,12 +68,14 @@ class _FixturesScreenState extends State<FixturesScreen> {
 
   void _onSoccerError(BuildContext context, SoccerState state) {
     if (state is SoccerTodayFixturesLoadFailure) {
+      if (state.message.contains("Thông tin dữ liệu bóng đá đang cập nhật")) return;
       AppErrorDialog.show(
         context: context,
         message: state.message,
         onRetry: context.read<SoccerCubit>().getTodayFixtures,
       );
     } else if (state is SoccerCurrentRoundFixturesLoadFailure) {
+      if (state.message.contains("Thông tin dữ liệu bóng đá đang cập nhật")) return;
       AppErrorDialog.show(
         context: context,
         message: state.message,
@@ -145,10 +147,18 @@ class _FixturesScreenState extends State<FixturesScreen> {
           isScrollable: true,
           showEmptyMessage: true,
         ),
-      SoccerCurrentRoundFixturesLoadFailure() ||
-      SoccerTodayFixturesLoadFailure() => Center(
-        child: AppEmptyWidget(message: context.l10n.errorLoadFixtures),
-      ),
+      SoccerCurrentRoundFixturesLoadFailure(:final message) ||
+      SoccerTodayFixturesLoadFailure(:final message) => 
+        message.contains("Thông tin dữ liệu bóng đá đang cập nhật")
+          ? ExploreLeaguesWidget(
+              onLeagueTap: _onExploreLeagueTap, 
+              isScrollable: true,
+              showEmptyMessage: true,
+              customEmptyMessage: message,
+            )
+          : Center(
+              child: AppEmptyWidget(message: context.l10n.errorLoadFixtures),
+            ),
       _ => const Center(child: AppEmptyWidget()),
     };
   }

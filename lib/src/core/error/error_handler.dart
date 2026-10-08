@@ -35,9 +35,6 @@ Failure _handleError(DioException error) {
     case DioExceptionType.sendTimeout:
     case DioExceptionType.receiveTimeout:
     case DioExceptionType.connectionError:
-      if (kIsWeb && !AppConstants.isUsingWebProxy) {
-        return DataSource.webProxyRequired.getFailure();
-      }
       return DataSource.networkConnectError.getFailure();
     case DioExceptionType.badResponse:
       switch (error.response?.statusCode) {

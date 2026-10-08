@@ -13,17 +13,16 @@ class LeagueModel extends League {
     super.color,
   });
 
-  factory LeagueModel.fromJson(
+  factory LeagueModel.fromApiFootball(
     Map<String, dynamic> json, {
     CountryModel? country,
   }) {
-    final id = json['id'];
     return LeagueModel(
-      id: id,
-      name: json['name'],
-      logo: AppConstants.competitionImage(id),
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      logo: json['logo'] ?? '',
       country: country,
-      color: json['color'],
+      color: null, // Not provided directly in fixture response
     );
   }
 }

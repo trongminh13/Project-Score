@@ -18,6 +18,7 @@ abstract class SoccerRepository {
 
   /// Get today fixtures.
   Future<Either<Failure, List<SoccerFixture>>> getTodayFixtures();
+  Future<Either<Failure, List<SoccerFixture>>> getLiveFixtures();
 
   /// Get team fixtures.
   Future<Either<Failure, List<SoccerFixture>>> getTeamFixtures({required int teamId});

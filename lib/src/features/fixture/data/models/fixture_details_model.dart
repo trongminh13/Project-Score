@@ -13,29 +13,63 @@ class FixtureDetailsModel extends FixtureDetails {
     super.venue,
   });
 
-  factory FixtureDetailsModel.fromJson(Map<String, dynamic> json) {
-    final competitionId = json['competitionId'];
-    final competitionName = json['competitionDisplayName'] ?? '';
+  factory FixtureDetailsModel.fromApiFootball(List<dynamic> responseList) {
+    if (responseList.isEmpty) {
+      throw Exception('Fixture details not found');
+    }
+    final data = responseList.first;
+    
+    // 1. Fixture
+    final fixtureModel = SoccerFixtureModel.fromApiFootball(data);
+    
+    // 2. Events
+    final events = <EventModel>[];
+    final eventsArray = data['events'] as List? ?? [];
+    for (int i = 0; i < eventsArray.length; i++) {
+      events.add(EventModel.fromApiFootball(eventsArray[i], i));
+    }
+    
+    // 3. Members (Players flat list for backward compatibility)
+    final members = <PlayerModel>[];
+    final lineupsArray = data['lineups'] as List? ?? [];
+    
+    for (final lineup in lineupsArray) {
+      final teamId = lineup['team']?['id'] ?? 0;
+      final startXI = lineup['startXI'] as List? ?? [];
+      final substitutes = lineup['substitutes'] as List? ?? [];
+      
+      for (final p in startXI) {
+        if (p['player'] != null) {
+          members.add(PlayerModel.fromApiFootball(p['player'], teamId));
+        }
+      }
+      for (final p in substitutes) {
+        if (p['player'] != null) {
+          members.add(PlayerModel.fromApiFootball(p['player'], teamId));
+        }
+      }
+    }
+
+    // 4. Venue
+    final fixtureNode = data['fixture'] ?? {};
+    final venueNode = fixtureNode['venue'] ?? {};
+    VenueModel? venue;
+    if (venueNode['id'] != null || venueNode['name'] != null) {
+      venue = VenueModel(
+        id: venueNode['id'] ?? 0,
+        name: venueNode['name'] ?? '',
+        shortName: venueNode['city'] ?? '',
+      );
+    }
+
     return FixtureDetailsModel(
-      fixture: SoccerFixtureModel.fromJson(
-        json,
-        fixtureLeague: League.light(id: competitionId, name: competitionName),
-      ),
-      events:
-          json['events'] != null
-              ? (json['events'] as List)
-                  .map((e) => EventModel.fromJson(e))
-                  .toList()
-              : [],
-      members:
-          json['members'] != null
-              ? (json['members'] as List)
-                  .map((e) => PlayerModel.fromJson(e))
-                  .toList()
-              : [],
-      venue: json['venue'] != null ? VenueModel.fromJson(json['venue']) : null,
+      fixture: fixtureModel,
+      events: events,
+      members: members,
+      venue: venue,
     );
   }
+
 }
 
 class VenueModel extends Venue {

@@ -23,7 +23,7 @@ class DioHelper implements ApiClient {
   }) {
     final Map<String, dynamic> headers = {_contentType: _applicationJson};
     dio.options = BaseOptions(
-      baseUrl: AppConstants.apiBaseUrl,
+      baseUrl: AppConstants.apiFootballBaseUrl,
       receiveDataWhenStatusError: true,
       receiveTimeout: const Duration(milliseconds: _timeOut),
       connectTimeout: const Duration(milliseconds: _timeOut),
@@ -73,21 +73,37 @@ class DioHelper implements ApiClient {
     return timezoneMap[offsetHours] ?? 'UTC';
   }
 
-  @override
-  Future<Response<T>> get<T>({
+  // ==========================================
+  // NEW API-FOOTBALL GET METHOD
+  // ==========================================
+  Future<Response<T>> getApiFootball<T>({
     required String url,
     Map<String, dynamic>? queryParams,
   }) async {
-    final locale = localeProvider.getLocale();
-    final mergedQueryParameters = <String, dynamic>{
-      'langId':
-          locale.languageCode == 'ar'
-              ? AppConstants.apiArabicLangId
-              : AppConstants.apiEnglishLangId,
-      'appTypeId': 5,
-      'timezoneName': _getTimezoneName(),
-      ...?queryParams,
-    };
-    return await dio.get<T>(url, queryParameters: mergedQueryParameters);
+    final mergedQueryParameters = <String, dynamic>{...?queryParams};
+
+    // Create a temporary Dio instance or use options directly for the new API
+    final newOptions = Options(
+      headers: {'x-apisports-key': AppConstants.apiFootballKey},
+    );
+
+    final response = await dio.get<T>(
+      AppConstants.apiFootballBaseUrl + url,
+      queryParameters: mergedQueryParameters,
+      options: newOptions,
+    );
+
+    if (response.data is Map<String, dynamic>) {
+      final data = response.data as Map<String, dynamic>;
+      if (data.containsKey('errors') && data['errors'] != null) {
+        final errors = data['errors'];
+        if (errors is Map && errors.isNotEmpty) {
+          throw Exception("Thông tin dữ liệu bóng đá đang cập nhật...");
+        } else if (errors is List && errors.isNotEmpty) {
+          throw Exception("Thông tin dữ liệu bóng đá đang cập nhật...");
+        }
+      }
+    }
+    return response;
   }
 }

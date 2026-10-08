@@ -65,7 +65,7 @@ class LineupPlayer extends StatelessWidget {
             child:
                 imageId != null
                     ? CustomImage(
-                      imageUrl: AppConstants.athleteImage(imageId, size: '120'),
+                      imageUrl: 'https://media.api-sports.io/football/players/$imageId.png',
                       fit: BoxFit.cover,
                       placeholder: _buildFallback(context, markerSize),
                       errorWidget: _buildFallback(context, markerSize),

@@ -17,3 +17,14 @@ class TodayFixturesUseCase implements UseCase<List<SoccerFixture>, NoParams> {
     return await soccerRepository.getTodayFixtures();
   }
 }
+
+class LiveFixturesUseCase implements UseCase<List<SoccerFixture>, NoParams> {
+  final SoccerRepository soccerRepository;
+
+  LiveFixturesUseCase({required this.soccerRepository});
+
+  @override
+  Future<Either<Failure, List<SoccerFixture>>> call(NoParams params) async {
+    return await soccerRepository.getLiveFixtures();
+  }
+}

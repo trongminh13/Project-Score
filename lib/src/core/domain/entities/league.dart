@@ -19,15 +19,6 @@ class League extends Equatable {
     this.color,
   });
 
-  /// Factory for a lightweight league (fixture use case)
-  factory League.light({required int id, required String name}) {
-    return League(
-      id: id,
-      name: name,
-      logo: AppConstants.competitionImage(id), // derived logo
-    );
-  }
-
   @override
   List<Object?> get props => [id, name, logo, country, color];
 }

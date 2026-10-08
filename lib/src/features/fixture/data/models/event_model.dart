@@ -16,6 +16,56 @@ class EventModel extends Event {
     super.team,
   });
 
+  factory EventModel.fromApiFootball(Map<String, dynamic> json, int orderIndex) {
+    final typeStr = json['type']?.toString().toLowerCase() ?? '';
+    final detailStr = json['detail']?.toString().toLowerCase() ?? '';
+    
+    int typeId = -1;
+    String typeName = '';
+    
+    if (typeStr == 'goal') {
+      if (detailStr.contains('missed penalty')) {
+        typeId = 6;
+        typeName = 'Missed Penalty';
+      } else {
+        typeId = 1;
+        typeName = 'Goal';
+      }
+    } else if (typeStr == 'card') {
+      if (detailStr.contains('yellow')) {
+        typeId = 2;
+        typeName = 'Yellow Card';
+      } else if (detailStr.contains('red')) {
+        typeId = 3;
+        typeName = 'Red Card';
+      }
+    } else if (typeStr == 'subst') {
+      typeId = 1000;
+      typeName = 'Substitute';
+    }
+
+    final time = json['time'] ?? {};
+    final team = json['team'] ?? {};
+    final player = json['player'] ?? {};
+    final assist = json['assist'] ?? {};
+
+    return EventModel(
+      teamId: team['id'] ?? 0,
+      playerId: player['id'] ?? 0,
+      order: orderIndex,
+      gameTime: time['elapsed'] ?? 0,
+      addedTime: time['extra'] ?? 0,
+      gameTimeDisplay: "${time['elapsed'] ?? 0}'",
+      gameTimeAndStatusDisplayType: 0,
+      type: EventTypeModel(
+        id: EventId.fromValue(typeId) ?? EventId.none,
+        name: typeName,
+        subTypeId: -1,
+      ),
+      extraPlayers: assist['id'] != null ? [assist['id']] : [],
+    );
+  }
+
   factory EventModel.fromJson(Map<String, dynamic> json) {
     return EventModel(
       teamId: toInt(json['competitorId']) ?? 0,

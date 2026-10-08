@@ -28,6 +28,15 @@ Future<Either<Failure, T>> safeApiCall<T>(
     } on DioException catch (error) {
       return Left(ErrorHandler.handle(error).failure);
     } catch (e) {
+      String msg = e.toString();
+      if (msg.contains("Thông tin dữ liệu bóng đá đang cập nhật")) {
+        return Left(
+          Failure(
+            code: 999,
+            message: "Thông tin dữ liệu bóng đá đang cập nhật...",
+          ),
+        );
+      }
       return Left(Failure(code: 999, message: 'Lỗi xử lý dữ liệu: $e'));
     }
   } else {

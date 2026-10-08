@@ -13,12 +13,14 @@ class ExploreLeaguesWidget extends StatelessWidget {
   final ValueChanged<int> onLeagueTap;
   final bool isScrollable;
   final bool showEmptyMessage;
+  final String? customEmptyMessage;
 
   const ExploreLeaguesWidget({
     super.key, 
     required this.onLeagueTap,
     this.isScrollable = true,
     this.showEmptyMessage = false,
+    this.customEmptyMessage,
   });
 
   @override
@@ -53,7 +55,7 @@ class ExploreLeaguesWidget extends StatelessWidget {
                   const SizedBox(width: AppSpacing.m),
                   Expanded(
                     child: Text(
-                      context.l10n.noFixtures,
+                      customEmptyMessage ?? context.l10n.noFixtures,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         color: context.colors.onSurface,
                       ),

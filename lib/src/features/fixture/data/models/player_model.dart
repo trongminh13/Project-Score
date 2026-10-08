@@ -12,6 +12,18 @@ class PlayerModel extends Player {
     super.imageId,
   });
 
+  factory PlayerModel.fromApiFootball(Map<String, dynamic> json, int teamId) {
+    return PlayerModel(
+      id: json['id'] ?? 0,
+      competitorId: teamId,
+      name: json['name'] ?? '',
+      shortName: json['name'] ?? '',
+      nameForURL: '',
+      number: json['number'] ?? 0,
+      imageId: json['id'] ?? 0,
+    );
+  }
+
   factory PlayerModel.fromJson(Map<String, dynamic> json) {
     return PlayerModel(
       id: toInt(json['id']) ?? 0,

@@ -41,6 +41,15 @@ class SoccerRepositoryImpl implements SoccerRepository {
   }
 
   @override
+  @override
+  Future<Either<Failure, List<SoccerFixture>>> getLiveFixtures() {
+    return safeApiCall(networkInfo, () async {
+      final result = await soccerDataSource.getLiveFixtures();
+      return result.map((fixture) => fixture.toDomain()).toList();
+    });
+  }
+
+  @override
   Future<Either<Failure, List<SoccerFixture>>> getTodayFixtures() {
     return safeApiCall(networkInfo, () async {
       final result = await soccerDataSource.getTodayFixtures();

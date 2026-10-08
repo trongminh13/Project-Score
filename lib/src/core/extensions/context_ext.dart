@@ -115,7 +115,8 @@ extension AppL10nHelpers on S {
       StatusMessage.internalServerErrorKey => errorInternalServerError,
       StatusMessage.networkConnectErrorKey => errorNetworkConnectError,
       StatusMessage.webProxyRequiredKey => errorWebProxyRequired,
-      _ => errorUnexpected,
+      StatusMessage.unexpectedKey => errorUnexpected,
+      _ => key, // Return the raw custom message if it's not a known key
     };
   }
 }

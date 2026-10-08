@@ -38,7 +38,6 @@ class GroupedFixturesList extends StatefulWidget {
   final Widget? bottomWidget;
   final bool useCompactLayout;
   final bool isScrollable;
-  final bool autoScrollToUpcoming;
 
   const GroupedFixturesList({
     super.key,
@@ -47,7 +46,6 @@ class GroupedFixturesList extends StatefulWidget {
     this.bottomWidget,
     this.useCompactLayout = false,
     this.isScrollable = true,
-    this.autoScrollToUpcoming = true,
   });
 
   @override
@@ -57,24 +55,13 @@ class GroupedFixturesList extends StatefulWidget {
 class _GroupedFixturesListState extends State<GroupedFixturesList> {
   late final ScrollController _scrollController;
   List<GroupedFixtureItem> _groupedItems = [];
-  final GlobalKey _targetKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !widget.autoScrollToUpcoming) return;
-      if (_targetKey.currentContext != null) {
-        Scrollable.ensureVisible(
-          _targetKey.currentContext!,
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeInOutCubic,
-          alignment: 0.1, // Leave a little space at the top
-        );
-      } else {
-        _scrollToTarget();
-      }
+      _scrollToTarget();
     });
   }
 
@@ -84,45 +71,82 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
     super.dispose();
   }
 
-    void _scrollToTarget() {
-    if (!_scrollController.hasClients) return;
-    double offset = 0.0;
+  void _scrollToTarget() {
+    if (!_scrollController.hasClients || _groupedItems.isEmpty) return;
 
-    if (widget.showLeagueLogo && !widget.useCompactLayout) {
-      final groups = _buildGroupedFixturesByLeague(widget.fixtures);
-      final target = _findTargetIndices(groups);
-      if (target.leagueIndex < 0) return;
+    int targetCardIndex = -1;
 
-      for (int i = 0; i < target.leagueIndex; i++) {
-        offset += 48.0; 
-        offset += groups[i].fixtures.length * 49.0;
+    // 1. Search for live fixture
+    for (int i = 0; i < _groupedItems.length; i++) {
+      final item = _groupedItems[i];
+      if (item is FixtureCardItem && item.fixture.status.isLive) {
+        targetCardIndex = i;
+        break;
       }
-      offset += 48.0; // Header of target league
-      offset += target.fixtureIndex * 49.0; // Items before target fixture
-    } else if (widget.showLeagueLogo && widget.useCompactLayout) {
-      final groups = _buildGroupedFixturesByLeague(widget.fixtures);
-      final target = _findTargetIndices(groups);
-      if (target.leagueIndex < 0) return;
+    }
 
-      for (int i = 0; i < target.leagueIndex; i++) {
-        offset += 40.0 + (groups[i].fixtures.length * 60.0) + 16.0;
-      }
-      offset += 40.0; // Header of target league
-      offset += target.fixtureIndex * 60.0; // Items before target fixture
-    } else {
-      int targetIndex = _findTargetDateGroupIndex();
-      if (targetIndex <= 0) return;
-
-      for (int i = 0; i < targetIndex; i++) {
+    // 2. Search for today's matches
+    if (targetCardIndex == -1) {
+      final now = DateTime.now();
+      for (int i = 0; i < _groupedItems.length; i++) {
         final item = _groupedItems[i];
-        if (item is FixtureHeaderItem) {
-          offset += 44.0;
-        } else {
-          offset += widget.useCompactLayout ? 49.0 : 192.0;
+        if (item is FixtureCardItem) {
+          final startTime = item.fixture.startTime;
+          if (startTime != null) {
+            final local = startTime.toLocal();
+            if (local.year == now.year &&
+                local.month == now.month &&
+                local.day == now.day) {
+              targetCardIndex = i;
+              break;
+            }
+          }
         }
       }
     }
 
+    // 3. Search for future matches (today or future)
+    if (targetCardIndex == -1) {
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+      for (int i = 0; i < _groupedItems.length; i++) {
+        final item = _groupedItems[i];
+        if (item is FixtureCardItem) {
+          final startTime = item.fixture.startTime;
+          if (startTime != null) {
+            final local = startTime.toLocal();
+            if (local.isAfter(todayStart)) {
+              targetCardIndex = i;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if (targetCardIndex == -1) return;
+
+    // Scroll to the header preceding this card
+    int targetIndex = 0;
+    for (int i = targetCardIndex; i >= 0; i--) {
+      if (_groupedItems[i] is FixtureHeaderItem) {
+        targetIndex = i;
+        break;
+      }
+    }
+
+    // Calculate scroll offset based on estimated item heights
+    double offset = 0.0;
+    for (int i = 0; i < targetIndex; i++) {
+      final item = _groupedItems[i];
+      if (item is FixtureHeaderItem) {
+        offset += 44.0; // Header height
+      } else if (item is FixtureCardItem) {
+        offset += 192.0; // Card height + top margin
+      }
+    }
+
+    // Smooth scroll to the offset
     _scrollController.animateTo(
       offset,
       duration: const Duration(milliseconds: 600),
@@ -155,38 +179,12 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
     }
   }
 
-  int _findTargetDateGroupIndex() {
-    if (_groupedItems.isEmpty) return -1;
-    for (int i = 0; i < _groupedItems.length; i++) {
-      final item = _groupedItems[i];
-      if (item is FixtureCardItem && item.fixture.status.isLive) return i;
-    }
-    final now = DateTime.now();
-    for (int i = 0; i < _groupedItems.length; i++) {
-      final item = _groupedItems[i];
-      if (item is FixtureCardItem) {
-        final st = item.fixture.startTime?.toLocal();
-        if (st != null &&
-            st.year == now.year &&
-            st.month == now.month &&
-            st.day == now.day)
-          return i;
-      }
-    }
-    return 0; // Default to first
-  }
-
   Widget _buildDateGroupedList(BuildContext context) {
-    final targetIndex = _findTargetDateGroupIndex();
-    final itemCount =
-        _groupedItems.length + (widget.bottomWidget != null ? 1 : 0);
+    final itemCount = _groupedItems.length + (widget.bottomWidget != null ? 1 : 0);
     return ListView.builder(
       controller: widget.isScrollable ? _scrollController : null,
       shrinkWrap: !widget.isScrollable,
-      physics:
-          widget.isScrollable
-              ? const BouncingScrollPhysics()
-              : const NeverScrollableScrollPhysics(),
+      physics: widget.isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 120),
       itemCount: itemCount,
       itemBuilder: (context, index) {
@@ -208,25 +206,23 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
               ),
             ),
           ),
-          FixtureCardItem(fixture: final fixture) =>
-            widget.useCompactLayout
-                ? Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.s,
-                    vertical: 4.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: context.colorsExt.surfaceElevated,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [AppShadows.floatingShadow],
-                  ),
-                  child: CompactFixtureRow(fixture: fixture),
-                )
-                : _buildFixtureCard(context, fixture),
+          FixtureCardItem(fixture: final fixture) => widget.useCompactLayout 
+            ? Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.s,
+                  vertical: 4.0,
+                ),
+                decoration: BoxDecoration(
+                  color: context.colorsExt.surfaceElevated,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [AppShadows.floatingShadow],
+                ),
+                child: CompactFixtureRow(fixture: fixture),
+              )
+            : _buildFixtureCard(context, fixture),
         };
 
         return FadeSlideIn(
-          key: index == targetIndex ? _targetKey : null,
           delay: Duration(milliseconds: 30 * index.clamp(0, 15)),
           child: widgetItem,
         );
@@ -234,51 +230,18 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
     );
   }
 
-  ({int leagueIndex, int fixtureIndex}) _findTargetIndices(
-    List<_LeagueGroup> groups,
-  ) {
-    if (groups.isEmpty) return (leagueIndex: -1, fixtureIndex: -1);
-    for (int i = 0; i < groups.length; i++) {
-      for (int j = 0; j < groups[i].fixtures.length; j++) {
-        if (groups[i].fixtures[j].status.isLive)
-          return (leagueIndex: i, fixtureIndex: j);
-      }
-    }
-    final now = DateTime.now();
-    for (int i = 0; i < groups.length; i++) {
-      for (int j = 0; j < groups[i].fixtures.length; j++) {
-        final st = groups[i].fixtures[j].startTime?.toLocal();
-        if (st != null &&
-            st.year == now.year &&
-            st.month == now.month &&
-            st.day == now.day) {
-          return (leagueIndex: i, fixtureIndex: j);
-        }
-      }
-    }
-    return (leagueIndex: 0, fixtureIndex: 0);
-  }
-
   Widget _buildLeagueGroupedList(BuildContext context) {
     final groups = _buildGroupedFixturesByLeague(widget.fixtures);
-    final target = _findTargetIndices(groups);
-    final targetLeagueIndex = target.leagueIndex;
-    final targetFixtureIndex = target.fixtureIndex;
 
     return CustomScrollView(
-      controller: widget.isScrollable ? _scrollController : null,
       shrinkWrap: !widget.isScrollable,
-      physics:
-          widget.isScrollable
-              ? const BouncingScrollPhysics()
-              : const NeverScrollableScrollPhysics(),
+      physics: widget.isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
       slivers: [
         if (widget.useCompactLayout)
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
               final group = groups[index];
               return FadeSlideIn(
-                key: index == targetLeagueIndex ? _targetKey : null,
                 delay: Duration(milliseconds: 30 * index.clamp(0, 10)),
                 child: LeagueGroupedCard(
                   league: group.league,
@@ -291,12 +254,6 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
           for (int i = 0; i < groups.length; i++)
             SliverMainAxisGroup(
               slivers: [
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    key: i == targetLeagueIndex ? _targetKey : null,
-                    height: 0,
-                  ),
-                ),
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: _LeagueHeaderDelegate(
@@ -325,13 +282,13 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
                     );
                   }, childCount: groups[i].fixtures.length),
                 ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: AppSpacing.xl),
-                ),
+                const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
               ],
             ),
         if (widget.bottomWidget != null)
-          SliverToBoxAdapter(child: widget.bottomWidget!),
+          SliverToBoxAdapter(
+            child: widget.bottomWidget!,
+          ),
         const SliverToBoxAdapter(
           child: SizedBox(height: 120), // Bottom padding
         ),

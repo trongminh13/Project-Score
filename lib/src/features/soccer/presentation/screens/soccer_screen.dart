@@ -1,3 +1,5 @@
+import '../../../../core/widgets/ad_banner_widget.dart';
+import '../widgets/explore_leagues_widget.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -42,6 +44,7 @@ class _SoccerScreenState extends State<SoccerScreen> {
   void _onSoccerStateChange(BuildContext context, SoccerState state) {
     switch (state) {
       case SoccerCurrentRoundFixturesLoadFailure():
+        if (state.message.contains("Thông tin dữ liệu bóng đá đang cập nhật")) return;
         AppErrorDialog.show(
           context: context,
           message: state.message,
@@ -54,6 +57,7 @@ class _SoccerScreenState extends State<SoccerScreen> {
           },
         );
       case SoccerTodayFixturesLoadFailure():
+        if (state.message.contains("Thông tin dữ liệu bóng đá đang cập nhật")) return;
         AppErrorDialog.show(
           context: context,
           message: state.message,
@@ -64,6 +68,7 @@ class _SoccerScreenState extends State<SoccerScreen> {
           _activateTimerFetching();
         } else {
           _timer?.cancel();
+          _timer = null;
         }
       default:
         break;
@@ -73,6 +78,7 @@ class _SoccerScreenState extends State<SoccerScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+          _timer = null;
     super.dispose();
   }
 
@@ -188,6 +194,31 @@ class _ViewFixtures extends StatelessWidget {
             ),
             SoccerTodayFixturesLoaded() =>
               HomeLiveFixturesDashboard(searchQuery: searchQuery),
+            SoccerTodayFixturesLoadFailure(:final message) => 
+              message.contains("Thông tin dữ liệu bóng đá đang cập nhật")
+                ? Column(
+                    children: [
+                      const AdBannerWidget(),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: ExploreLeaguesWidget(
+                      onLeagueTap: (id) {
+                        final leagues = context.read<LeaguesCubit>().availableLeagues;
+                        final league = leagues.firstWhere((l) => l.id == id);
+                        buildBottomSheet(
+                          context: context,
+                          league: league,
+                          cubit: context.read<SoccerCubit>(),
+                        );
+                      }, 
+                      isScrollable: false,
+                      showEmptyMessage: true,
+                      customEmptyMessage: message,
+                    ),
+                  ),
+                ],
+              )
+            : const SizedBox.shrink(),
             _ => const SizedBox.shrink(),
           },
     );

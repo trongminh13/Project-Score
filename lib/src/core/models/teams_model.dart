@@ -7,6 +7,25 @@ import '../domain/entities/teams.dart';
 class TeamsModel extends Teams {
   const TeamsModel({required super.home, required super.away});
 
+  factory TeamsModel.fromApiFootball(Map<String, dynamic> json, Map<String, dynamic> goals, {List<dynamic>? lineups}) {
+    Map<String, dynamic>? homeLineup;
+    Map<String, dynamic>? awayLineup;
+    
+    if (lineups != null && lineups.isNotEmpty) {
+      final homeId = json['home']?['id'];
+      final awayId = json['away']?['id'];
+      for (final l in lineups) {
+        if (l['team']?['id'] == homeId) homeLineup = l;
+        if (l['team']?['id'] == awayId) awayLineup = l;
+      }
+    }
+    
+    return TeamsModel(
+      home: TeamModel.fromApiFootball(json['home'], goals['home'] ?? -1, lineupJson: homeLineup),
+      away: TeamModel.fromApiFootball(json['away'], goals['away'] ?? -1, lineupJson: awayLineup),
+    );
+  }
+
   factory TeamsModel.fromJson(Map<String, dynamic> json) => TeamsModel(
     home: TeamModel.fromJson(json['homeCompetitor']),
     away: TeamModel.fromJson(json['awayCompetitor']),
@@ -27,12 +46,26 @@ class TeamModel extends Team {
     super.shortName,
   });
 
+  factory TeamModel.fromApiFootball(Map<String, dynamic> json, int score, {Map<String, dynamic>? lineupJson}) {
+    LineupModel? lineup;
+    if (lineupJson != null) {
+      lineup = LineupModel.fromApiFootball(lineupJson);
+    }
+    return TeamModel(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      logo: json['logo'] ?? '',
+      score: score,
+      lineup: lineup,
+    );
+  }
+
   factory TeamModel.fromJson(Map<String, dynamic> json) {
     final id = json['id'];
     return TeamModel(
       id: id,
       name: json['name'],
-      logo: AppConstants.clubImage(id.toString()),
+      logo: '',
       color: json['color'],
       awayColor: json['awayColor'],
       score: (json['score'] as num?)?.toInt() ?? -1,

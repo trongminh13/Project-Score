@@ -15,10 +15,7 @@ import '../../../favorites/presentation/cubit/favorites_state.dart';
 class CompactFixtureRow extends StatelessWidget {
   final SoccerFixture fixture;
 
-  const CompactFixtureRow({
-    super.key,
-    required this.fixture,
-  });
+  const CompactFixtureRow({super.key, required this.fixture});
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +31,17 @@ class CompactFixtureRow extends StatelessWidget {
     FontWeight statusWeight = FontWeight.normal;
 
     if (fixture.startTime != null) {
-      dateText = fixture.startTime!.formatForLocale(context.localeName, pattern: 'dd/MM');
+      dateText = fixture.startTime!.formatForLocale(
+        context.localeName,
+        pattern: 'dd/MM',
+      );
     }
 
     if (isLive) {
-      timeOrStatusText = fixture.gameTimeDisplay.isNotEmpty 
-          ? fixture.gameTimeDisplay 
-          : (fixture.gameTime != null ? "${fixture.gameTime}'" : 'Live');
+      timeOrStatusText =
+          fixture.gameTimeDisplay.isNotEmpty
+              ? fixture.gameTimeDisplay
+              : (fixture.gameTime != null ? "${fixture.gameTime}'" : 'Live');
       statusColor = context.colors.error; // Red color for live
       statusWeight = FontWeight.bold;
     } else if (fixture.status.name == 'ended') {
@@ -48,7 +49,10 @@ class CompactFixtureRow extends StatelessWidget {
       statusColor = context.colorsExt.textMuted;
       statusWeight = FontWeight.w600;
     } else if (fixture.startTime != null) {
-      timeOrStatusText = fixture.startTime!.formatForLocale(context.localeName, pattern: 'HH:mm');
+      timeOrStatusText = fixture.startTime!.formatForLocale(
+        context.localeName,
+        pattern: 'HH:mm',
+      );
       statusWeight = FontWeight.w500;
     } else {
       timeOrStatusText = context.l10n.tbd;
@@ -78,7 +82,9 @@ class CompactFixtureRow extends StatelessWidget {
                       dateText,
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontSize: 10,
-                        color: context.colorsExt.textMuted.withValues(alpha: 0.8),
+                        color: context.colorsExt.textMuted.withValues(
+                          alpha: 0.8,
+                        ),
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 1,
@@ -98,7 +104,7 @@ class CompactFixtureRow extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(width: AppSpacing.s),
 
             // CENTER COLUMN: Teams
@@ -127,7 +133,10 @@ class CompactFixtureRow extends StatelessWidget {
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontSize: 13,
                       fontWeight: isLive ? FontWeight.bold : FontWeight.w600,
-                      color: isLive ? context.colors.error : context.colors.onSurface,
+                      color:
+                          isLive
+                              ? context.colors.error
+                              : context.colors.onSurface,
                     ),
                   ),
                   const SizedBox(height: 2.5),
@@ -136,7 +145,10 @@ class CompactFixtureRow extends StatelessWidget {
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontSize: 13,
                       fontWeight: isLive ? FontWeight.bold : FontWeight.w600,
-                      color: isLive ? context.colors.error : context.colors.onSurface,
+                      color:
+                          isLive
+                              ? context.colors.error
+                              : context.colors.onSurface,
                     ),
                   ),
                 ],
@@ -151,21 +163,30 @@ class CompactFixtureRow extends StatelessWidget {
               builder: (context, state) {
                 bool isFav = false;
                 if (state is FavoritesLoaded) {
-                  isFav = state.favoriteMatchIds.contains(fixture.id.toString());
+                  isFav = state.favoriteMatchIds.contains(
+                    fixture.id.toString(),
+                  );
                 }
                 return IconButton(
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+                  constraints: const BoxConstraints(
+                    minWidth: 26,
+                    minHeight: 26,
+                  ),
                   iconSize: 18,
                   onPressed: () {
                     try {
                       final isAdding = !isFav;
-                      context.read<FavoritesCubit>().toggleFavoriteMatch(fixture.id.toString());
+                      context.read<FavoritesCubit>().toggleFavoriteMatch(
+                        fixture.id.toString(),
+                      );
                       ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            isAdding ? 'Bạn đã yêu thích trận đấu này' : 'Đã bỏ yêu thích trận đấu này',
+                            isAdding
+                                ? 'Bạn đã yêu thích trận đấu này'
+                                : 'Đã bỏ yêu thích trận đấu này',
                           ),
                           duration: const Duration(seconds: 2),
                           behavior: SnackBarBehavior.floating,
@@ -174,7 +195,9 @@ class CompactFixtureRow extends StatelessWidget {
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Tính năng yêu thích tạm thời không khả dụng.'),
+                          content: Text(
+                            'Tính năng yêu thích tạm thời không khả dụng.',
+                          ),
                           duration: Duration(seconds: 2),
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -183,7 +206,10 @@ class CompactFixtureRow extends StatelessWidget {
                   },
                   icon: Icon(
                     isFav ? Icons.star_rounded : Icons.star_border_rounded,
-                    color: isFav ? context.colors.primary : context.colorsExt.textMuted,
+                    color:
+                        isFav
+                            ? context.colors.primary
+                            : context.colorsExt.textMuted,
                   ),
                 );
               },
@@ -198,11 +224,7 @@ class CompactFixtureRow extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CustomImage(
-          imageUrl: logoUrl ?? '',
-          width: 14,
-          height: 14,
-        ),
+        CustomImage(imageUrl: logoUrl ?? '', width: 14, height: 14),
         const SizedBox(width: AppSpacing.s),
         Flexible(
           child: Text(

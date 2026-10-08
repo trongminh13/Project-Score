@@ -19,6 +19,7 @@ abstract class SoccerDataSource {
   });
 
   Future<List<SoccerFixtureModel>> getTodayFixtures();
+  Future<List<SoccerFixtureModel>> getLiveFixtures();
 
   Future<List<SoccerFixtureModel>> getTeamFixtures({required int teamId});
 
@@ -41,11 +42,21 @@ class SoccerDataSourceImpl implements SoccerDataSource {
     required int competitionId,
   }) async {
     try {
-      final response = await apiClient.get(
-        url: Endpoints.currentRoundFixtures,
-        queryParams: {'competitions': competitionId},
+      final apiFootballLeagueId = AppConstants.mapToApiFootballLeagueId(
+        competitionId,
       );
-      return _parseFixtures(response, allowedCompetitionIds: {competitionId});
+      final response = await apiClient.getApiFootball(
+        url: Endpoints.apiFootballFixtures,
+        queryParams: {
+          'league': apiFootballLeagueId,
+          'season': 2024,
+          'next': 15,
+        },
+      );
+      final List<dynamic> result = response.data['response'] ?? [];
+      return result
+          .map((item) => SoccerFixtureModel.fromApiFootball(item))
+          .toList();
     } catch (error) {
       rethrow;
     }
@@ -53,29 +64,107 @@ class SoccerDataSourceImpl implements SoccerDataSource {
 
   @override
   Future<List<LeagueModel>> getLeagues() async {
+    // Return a hardcoded list of supported leagues to save API calls
+    // and ensure we use API-Football logo URLs directly, fixing the black square UI bug.
+    return [
+      const LeagueModel(
+        id: 7,
+        name: 'Premier League',
+        logo: 'https://media.api-sports.io/football/leagues/39.png',
+        color: '#38003C',
+      ),
+      const LeagueModel(
+        id: 11,
+        name: 'La Liga',
+        logo: 'https://media.api-sports.io/football/leagues/140.png',
+        color: '#EE8707',
+      ),
+      const LeagueModel(
+        id: 17,
+        name: 'Serie A',
+        logo: 'https://media.api-sports.io/football/leagues/135.png',
+        color: '#00519E',
+      ),
+      const LeagueModel(
+        id: 25,
+        name: 'Bundesliga',
+        logo: 'https://media.api-sports.io/football/leagues/78.png',
+        color: '#D20515',
+      ),
+      const LeagueModel(
+        id: 35,
+        name: 'Ligue 1',
+        logo: 'https://media.api-sports.io/football/leagues/61.png',
+        color: '#DA251D',
+      ),
+      const LeagueModel(
+        id: 552,
+        name: 'Premier League (Egypt)',
+        logo: 'https://media.api-sports.io/football/leagues/233.png',
+        color: null,
+      ),
+      const LeagueModel(
+        id: 572,
+        name: 'UEFA Champions League',
+        logo: 'https://media.api-sports.io/football/leagues/2.png',
+        color: '#00336A',
+      ),
+      const LeagueModel(
+        id: 573,
+        name: 'UEFA Europa League',
+        logo: 'https://media.api-sports.io/football/leagues/3.png',
+        color: '#F68E00',
+      ),
+      const LeagueModel(
+        id: 73,
+        name: 'Liga Portugal',
+        logo: 'https://media.api-sports.io/football/leagues/94.png',
+        color: null,
+      ),
+      const LeagueModel(
+        id: 57,
+        name: 'Eredivisie',
+        logo: 'https://media.api-sports.io/football/leagues/88.png',
+        color: '#2574A9',
+      ),
+      const LeagueModel(
+        id: 649,
+        name: 'Saudi Pro League',
+        logo: 'https://media.api-sports.io/football/leagues/307.png',
+        color: '#135E2C',
+      ),
+      const LeagueModel(
+        id: 5930,
+        name: 'World Cup',
+        logo: 'https://media.api-sports.io/football/leagues/1.png',
+        color: '#800040',
+      ),
+    ];
+  }
+
+  @override
+  @override
+  Future<List<SoccerFixtureModel>> getLiveFixtures() async {
     try {
-      final response = await apiClient.get(
-        url: Endpoints.leagues,
-        queryParams: {
-          'competitions': AppConstants.availableLeagues.join(','),
-          'withBestOdds': true,
-        },
+      final response = await apiClient.getApiFootball(
+        url: Endpoints.apiFootballFixtures,
+        queryParams: {'live': 'all'},
       );
-      final List<dynamic> result = response.data['competitions'];
-      final countries = List<CountryModel>.from(
-        response.data['countries'].map((item) => CountryModel.fromJson(item)),
-      );
-      final leagues = List<LeagueModel>.from(
-        result.map(
-          (item) => LeagueModel.fromJson(
-            item,
-            country: countries.firstWhere(
-              (country) => country.id == item['countryId'],
-            ),
-          ),
-        ),
-      );
-      return leagues;
+
+      final List<dynamic> result = response.data['response'] ?? [];
+      final apiFootballAllowedLeagueIds =
+          AppConstants.availableLeagues
+              .map(AppConstants.mapToApiFootballLeagueId)
+              .toSet();
+
+      return result
+          .where((item) {
+            final leagueId = item['league']?['id'] as int?;
+            return leagueId != null &&
+                apiFootballAllowedLeagueIds.contains(leagueId);
+          })
+          .map((item) => SoccerFixtureModel.fromApiFootball(item))
+          .toList();
     } catch (error) {
       rethrow;
     }
@@ -84,69 +173,74 @@ class SoccerDataSourceImpl implements SoccerDataSource {
   @override
   Future<List<SoccerFixtureModel>> getTodayFixtures() async {
     try {
-      final responseCurrent = await apiClient.get(
-        url: Endpoints.currentRoundFixtures,
-        queryParams: {
-          'competitions': AppConstants.availableLeagues.join(','),
-        },
-      );
-      final currentFixtures = _parseFixtures(
-        responseCurrent,
-        allowedCompetitionIds: _availableLeagueIds,
-      );
+      final now = dateTimeProvider.now();
+      final todayStr = now.toIso8601String().split('T').first;
+      final tomorrowStr = now.add(const Duration(days: 1)).toIso8601String().split('T').first;
 
-      final responseToday = await apiClient.get(
-        url: Endpoints.todayFixtures,
-        queryParams: {
-          'competitions': AppConstants.availableLeagues.join(','),
-        },
-      );
-      final todayFixtures = _parseFixtures(
-        responseToday,
-        allowedCompetitionIds: _availableLeagueIds,
-      );
+      final responses = await Future.wait([
+        apiClient.getApiFootball(
+          url: Endpoints.apiFootballFixtures,
+          queryParams: {
+            'date': todayStr,
+            'timezone': 'Asia/Ho_Chi_Minh',
+          },
+        ),
+        apiClient.getApiFootball(
+          url: Endpoints.apiFootballFixtures,
+          queryParams: {
+            'date': tomorrowStr,
+            'timezone': 'Asia/Ho_Chi_Minh',
+          },
+        ),
+      ]);
 
-      final Map<int, SoccerFixtureModel> merged = {};
-      // Add current fixtures first
-      for (final f in currentFixtures) {
-        merged[f.id] = f;
-      }
-      // Add today fixtures, which will overwrite/update if they exist
-      // This guarantees finished matches for today are included!
-      for (final f in todayFixtures) {
-        merged[f.id] = f;
-      }
+      final List<dynamic> result1 = responses[0].data['response'] ?? [];
+      final List<dynamic> result2 = responses[1].data['response'] ?? [];
+      final result = [...result1, ...result2];
+      final apiFootballAllowedLeagueIds =
+          AppConstants.availableLeagues
+              .map(AppConstants.mapToApiFootballLeagueId)
+              .toSet();
 
-      final result = merged.values.toList();
-      result.sort((a, b) {
+      final todayFixtures =
+          result
+              .where((item) {
+                final leagueId = item['league']?['id'] as int?;
+                return leagueId != null &&
+                    apiFootballAllowedLeagueIds.contains(leagueId);
+              })
+              .map((item) => SoccerFixtureModel.fromApiFootball(item))
+              .toList();
+
+      todayFixtures.sort((a, b) {
         final dateA = a.startTime ?? DateTime.fromMillisecondsSinceEpoch(0);
         final dateB = b.startTime ?? DateTime.fromMillisecondsSinceEpoch(0);
         return dateA.compareTo(dateB);
       });
-      return result;
+      return todayFixtures;
     } catch (error) {
       rethrow;
     }
   }
 
-
   @override
-  Future<List<SoccerFixtureModel>> getTeamFixtures({required int teamId}) async {
+  Future<List<SoccerFixtureModel>> getTeamFixtures({
+    required int teamId,
+  }) async {
     try {
-      final responseFixtures = await apiClient.get(
-        url: Endpoints.fixtures,
-        queryParams: {'competitors': teamId},
-      );
-      
-      final responseResults = await apiClient.get(
-        url: '/games/results/',
-        queryParams: {'competitors': teamId},
+      // NOTE: teamId from UI will inherently be the API-Football team ID because
+      // the teams originate from the Standings/Fixtures which are already migrated!
+      final response = await apiClient.getApiFootball(
+        url: Endpoints.apiFootballFixtures,
+        queryParams: {'team': teamId, 'season': 2024},
       );
 
-      final upcoming = _parseFixtures(responseFixtures, allowedCompetitionIds: null);
-      final past = _parseFixtures(responseResults, allowedCompetitionIds: null);
-      
-      final allMatches = [...past, ...upcoming];
+      final List<dynamic> result = response.data['response'] ?? [];
+      final allMatches =
+          result
+              .map((item) => SoccerFixtureModel.fromApiFootball(item))
+              .toList();
+
       allMatches.sort((a, b) {
         final dateA = a.startTime ?? DateTime.fromMillisecondsSinceEpoch(0);
         final dateB = b.startTime ?? DateTime.fromMillisecondsSinceEpoch(0);
@@ -161,47 +255,17 @@ class SoccerDataSourceImpl implements SoccerDataSource {
   @override
   Future<StandingsModel> getStandings({required StandingsParams params}) async {
     try {
-      final response = await apiClient.get(
-        url: Endpoints.standings,
-        queryParams: params.toJson(),
+      final apiFootballLeagueId = AppConstants.mapToApiFootballLeagueId(
+        params.leagueId,
       );
-      final List<dynamic> result = response.data['standings'];
-      final StandingsModel standings =
-          result.isNotEmpty
-              ? StandingsModel.fromJson(result.first)
-              : const StandingsModel(standings: []);
-      return standings;
+      final response = await apiClient.getApiFootball(
+        url: Endpoints.apiFootballStandings,
+        queryParams: {'league': apiFootballLeagueId, 'season': 2024},
+      );
+
+      return StandingsModel.fromApiFootball(response.data);
     } catch (error) {
       rethrow;
     }
-  }
-
-  List<SoccerFixtureModel> _parseFixtures(
-    Response response, {
-    Set<int>? allowedCompetitionIds,
-  }) {
-    final result = response.data['games'] as List<dynamic>? ?? const [];
-    return result
-        .whereType<Map>()
-        .map((fixture) => Map<String, dynamic>.from(fixture))
-        .where((fixture) {
-          final competitionId = (fixture['competitionId'] as num?)?.toInt();
-          return competitionId != null &&
-              (allowedCompetitionIds == null || allowedCompetitionIds.contains(competitionId));
-        })
-        .map(_buildFixtureModel)
-        .toList();
-  }
-
-  SoccerFixtureModel _buildFixtureModel(Map<String, dynamic> fixture) {
-    final competitionId = (fixture['competitionId'] as num).toInt();
-
-    return SoccerFixtureModel.fromJson(
-      fixture,
-      fixtureLeague: League.light(
-        id: competitionId,
-        name: fixture['competitionDisplayName'],
-      ),
-    );
   }
 }

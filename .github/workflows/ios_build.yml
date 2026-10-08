@@ -1,0 +1,26 @@
+name: "Build iOS & Upload to TestFlight"
+
+on:
+  workflow_dispatch: # Cho phép trigger thủ công từ tab Actions
+
+jobs:
+  build_ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build iOS (No Sign - for Testing CI)
+        run: flutter build ios --release --no-codesign
+        
+      # TODO: Khi nào có Apple Developer Account, 
+      # chúng ta sẽ thêm các step giải mã Certificate (p12) và Provisioning Profile
+      # từ GitHub Secrets, sau đó upload ipa lên App Store Connect.

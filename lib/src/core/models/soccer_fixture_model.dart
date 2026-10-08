@@ -3,6 +3,7 @@ import 'package:live_score/src/core/domain/mappers/mappers.dart';
 
 import '../domain/entities/soccer_fixture.dart';
 import 'teams_model.dart';
+import 'league_model.dart';
 
 /// Represents the soccer fixture model entity/model.
 class SoccerFixtureModel extends SoccerFixture {
@@ -20,6 +21,50 @@ class SoccerFixtureModel extends SoccerFixture {
     super.stageNum,
     super.seasonNum,
   });
+
+  factory SoccerFixtureModel.fromApiFootball(Map<String, dynamic> json) {
+    final fixture = json['fixture'] ?? {};
+    final league = json['league'] ?? {};
+    final teams = json['teams'] ?? {};
+    final goals = json['goals'] ?? {};
+    
+    final statusObj = fixture['status'] ?? {};
+    final statusShort = statusObj['short'] ?? '';
+    
+    int displayType = 0;
+    String statusText = 'Sắp diễn ra';
+    
+    if (['FT', 'AET', 'PEN'].contains(statusShort)) {
+      displayType = 1;
+      statusText = 'Kết thúc';
+    } else if (['1H', 'HT', '2H', 'ET', 'P', 'LIVE'].contains(statusShort)) {
+      displayType = 2;
+      statusText = 'Đang đá';
+    } else if (['CANC', 'PST'].contains(statusShort)) {
+      statusText = 'Hoãn/Hủy';
+    }
+
+        String gameTimeDisplay = '';
+    if (statusShort == 'HT') {
+      gameTimeDisplay = 'HT';
+    } else if (['1H', '2H', 'ET', 'LIVE'].contains(statusShort)) {
+      final elapsed = statusObj['elapsed'];
+      gameTimeDisplay = elapsed != null ? "${elapsed}'" : '';
+    } else if (statusShort == 'PEN' || statusShort == 'P') {
+      gameTimeDisplay = 'PEN';
+    }
+
+    return SoccerFixtureModel(
+      id: fixture['id'] ?? 0,
+      teams: TeamsModel.fromApiFootball(teams, goals, lineups: json['lineups']).toDomain(),
+      fixtureLeague: LeagueModel.fromApiFootball(league).toDomain(),
+      statusText: statusText,
+      gameTimeAndStatusDisplayType: displayType,
+      startTime: DateTime.tryParse(fixture['date'] ?? ''),
+      gameTime: statusObj['elapsed'],
+      gameTimeDisplay: gameTimeDisplay,
+    );
+  }
 
   factory SoccerFixtureModel.fromJson(
     Map<String, dynamic> json, {

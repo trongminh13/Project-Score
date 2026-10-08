@@ -58,6 +58,7 @@ class _StandingsScreenState extends State<StandingsScreen> {
 
   void _onSoccerError(BuildContext context, SoccerState state) {
     if (state is SoccerStandingsLoadFailure) {
+      if (state.message.contains("Thông tin dữ liệu bóng đá đang cập nhật")) return;
       AppErrorDialog.show(
         context: context,
         message: state.message,

@@ -10,20 +10,44 @@ abstract class FixtureDataSource {
   Future<FixtureDetailsModel> getFixtureDetails(int fixtureId);
 }
 
+class CacheItem {
+  final List<dynamic> data;
+  final DateTime timestamp;
+
+  CacheItem(this.data, this.timestamp);
+}
+
 class FixtureDataSourceImpl implements FixtureDataSource {
   final ApiClient apiClient;
+  final Map<int, CacheItem> _matchCache = {};
 
   FixtureDataSourceImpl({required this.apiClient});
+  
+  Future<List<dynamic>> _fetchMatchDetails(int fixtureId) async {
+    final now = DateTime.now();
+    if (_matchCache.containsKey(fixtureId)) {
+      final item = _matchCache[fixtureId]!;
+      // 30 seconds TTL
+      if (now.difference(item.timestamp).inSeconds < 30) {
+        return item.data;
+      }
+    }
+    
+    final response = await apiClient.getApiFootball(
+      url: Endpoints.apiFootballFixtures,
+      queryParams: {'id': fixtureId},
+    );
+    
+    final result = response.data['response'] as List<dynamic>? ?? [];
+    _matchCache[fixtureId] = CacheItem(result, now);
+    return result;
+  }
 
   @override
   Future<FixtureDetailsModel> getFixtureDetails(int fixtureId) async {
     try {
-      final response = await apiClient.get(
-        url: Endpoints.fixtureDetails,
-        queryParams: {'gameId': fixtureId},
-      );
-      final result = response.data['game'];
-      return FixtureDetailsModel.fromJson(result);
+      final result = await _fetchMatchDetails(fixtureId);
+      return FixtureDetailsModel.fromApiFootball(result);
     } catch (error) {
       rethrow;
     }
@@ -32,12 +56,16 @@ class FixtureDataSourceImpl implements FixtureDataSource {
   @override
   Future<StatisticsModel> getStatistics(int fixtureId) async {
     try {
-      final response = await apiClient.get(
-        url: Endpoints.matchStatistics,
-        queryParams: {'games': fixtureId},
-      );
-      final result = response.data;
-      return StatisticsModel.fromJson(result);
+      final result = await _fetchMatchDetails(fixtureId);
+      if (result.isEmpty) {
+        return const StatisticsModel(teams: null, statistics: []);
+      }
+      
+      final data = result.first;
+      final statsList = data['statistics'] as List? ?? [];
+      final teamsData = data['teams'] as Map<String, dynamic>? ?? {};
+      
+      return StatisticsModel.fromApiFootball(statsList, teamsData);
     } catch (error) {
       rethrow;
     }

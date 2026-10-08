@@ -15,6 +15,39 @@ class TeamRankModel extends TeamRank {
     super.destinationNum,
   });
 
+  factory TeamRankModel.fromApiFootball(Map<String, dynamic> json) {
+    final String formString = json['form'] ?? '';
+    final List<int> formMapped = formString.split('').map((char) {
+      if (char == 'W') return 1;
+      if (char == 'D') return 2;
+      if (char == 'L') return 0;
+      return -1;
+    }).toList();
+
+    final all = json['all'] ?? {};
+    final goals = all['goals'] ?? {};
+
+    return TeamRankModel(
+      rank: json['rank'] ?? 0,
+      team: TeamModel(
+        id: json['team']['id'] ?? 0,
+        name: json['team']['name'] ?? '',
+        logo: json['team']['logo'],
+      ).toDomain(),
+      points: json['points'] ?? 0,
+      goalsDiff: json['goalsDiff'] ?? 0,
+      form: formMapped,
+      stats: TeamRankStatsModel(
+        played: all['played'] ?? 0,
+        win: all['win'] ?? 0,
+        draw: all['draw'] ?? 0,
+        lose: all['lose'] ?? 0,
+        scored: goals['for'] ?? 0,
+        received: goals['against'] ?? 0,
+      ).toDomain(),
+    );
+  }
+
   factory TeamRankModel.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic>? competitorObj = json['competitor'];
     
