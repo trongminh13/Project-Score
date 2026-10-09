@@ -11,13 +11,7 @@ class AuthProvider with ChangeNotifier {
   double _balance = 0.0;
   String _subscriptionTier = "FREE";
   
-  // Tự động đổi IP cho Android Emulator (10.0.2.2) hoặc Web/iOS (127.0.0.1)
-  String get baseUrl {
-    try {
-      if (Platform.isAndroid) return 'http://10.0.2.2:8000/api/v1/gamification';
-    } catch (e) {}
-    return 'http://127.0.0.1:8000/api/v1/gamification';
-  }
+  String get baseUrl => '${EnvConfig.backendBaseUrl}/gamification';
 
   String? get token => _token;
   double get balance => _balance;

@@ -16,12 +16,7 @@ class NotificationProvider extends ChangeNotifier {
   int get unreadCount => _unreadCount;
   List<NotificationModel> get notifications => _notifications;
 
-  String get baseUrl {
-    try {
-      if (Platform.isAndroid) return 'http://10.0.2.2:8000/api/v1/notifications';
-    } catch (e) {}
-    return 'http://127.0.0.1:8000/api/v1/notifications';
-  }
+  String get baseUrl => '${EnvConfig.backendBaseUrl}/notifications';
 
   void startPolling(AuthProvider auth) {
     _pollingTimer?.cancel();

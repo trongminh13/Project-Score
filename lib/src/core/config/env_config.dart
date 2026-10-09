@@ -14,7 +14,6 @@ class EnvConfig {
   }
 
   static const String apiFootballKey = String.fromEnvironment(
-    'API_FOOTBALL_KEY',
-    defaultValue: '4efc661a34ad33530177ab998b46c79e',
+    'API_FOOTBALL_KEY'
   );
 }

@@ -429,12 +429,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ).animate().fade(delay: 800.ms).slideY(begin: 0.5),
+
+                    const Divider(color: Colors.white24, height: 32),
+                    ListTile(
+                      leading: const Icon(Icons.delete_forever, color: Colors.redAccent),
+                      title: const Text('Xóa tài khoản vĩnh viễn', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                      onTap: () => _showDeleteAccountDialog(context),
+                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+  void _showDeleteAccountDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Text('Xác nhận xóa tài khoản', style: TextStyle(color: Colors.redAccent)),
+        content: const Text('Tài khoản của bạn và toàn bộ dữ liệu dự đoán sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.', style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Hủy', style: TextStyle(color: Colors.white54)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<AuthProvider>().logout();
+              context.go(Routes.soccer);
+            },
+            child: const Text('Xóa', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+          ),
+        ],
       ),
     );
   }
