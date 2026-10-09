@@ -34,15 +34,7 @@ jobs:
         run: flutter pub get
 
       - name: Build web app (HTML renderer for fast load)
-        run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
-
-      - name: Remove heavy CanvasKit WASM (not needed for HTML renderer)
-        run: rm -rf build/web/canvaskit
-
-      - name: Switch to HTML renderer in bootstrap
-        run: |
-          sed -i 's/"renderer":"canvaskit"/"renderer":"html"/g' build/web/flutter_bootstrap.js
-          echo "Renderer patched to HTML"
+        run: flutter build web --release --web-renderer html --base-href "/${{ github.event.repository.name }}/"
 
       - name: Add SPA fallback for GitHub Pages (handles deep links)
         run: cp build/web/index.html build/web/404.html
