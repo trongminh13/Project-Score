@@ -1,3 +1,4 @@
+import '../../data/models/prediction_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/predictor_pick.dart';
 import '../../domain/repositories/predictor_repository.dart';
@@ -9,6 +10,28 @@ class PredictorRoundCubit extends Cubit<PredictorRoundState> {
 
   PredictorRoundCubit({required this.repository})
     : super(PredictorRoundInitial());
+
+  
+  Future<void> loadPredictionForMatch(String fixtureIdStr) async {
+    final currentState = state;
+    if (currentState is! PredictorRoundLoaded) return;
+    if (currentState.predictions.containsKey(fixtureIdStr)) return;
+
+    final fixtureId = int.tryParse(fixtureIdStr);
+    if (fixtureId == null) return;
+
+    try {
+      final prediction = await repository.getMatchPrediction(fixtureId);
+      if (prediction != null && state is PredictorRoundLoaded) {
+        final s = state as PredictorRoundLoaded;
+        final newPredictions = Map<String, PredictionModel>.from(s.predictions);
+        newPredictions[fixtureIdStr] = prediction;
+        emit(s.copyWith(predictions: newPredictions));
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }
 
   Future<void> loadCurrentRound({String? leagueId}) async {
     emit(PredictorRoundLoading());

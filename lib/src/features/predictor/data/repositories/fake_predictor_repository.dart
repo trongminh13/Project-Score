@@ -1,3 +1,4 @@
+import '../models/prediction_model.dart';
 import '../../domain/repositories/predictor_repository.dart';
 import '../../domain/entities/predictor_round.dart';
 import '../../domain/entities/predictor_pick.dart';
@@ -278,5 +279,19 @@ class FakePredictorRepository implements PredictorRepository {
     const scenario = String.fromEnvironment('MOCK_SCENARIO', defaultValue: 'open');
     if (scenario == 'offline') throw PredictorSubmitException('Mất kết nối mạng khi chốt vòng đấu');
     _isSubmitted = true;
+  }
+
+  @override
+  Future<PredictionModel?> getMatchPrediction(int fixtureId) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return const PredictionModel(
+      advice: 'Fake prediction: Home team should win comfortably.',
+      percentHome: 60,
+      percentDraw: 25,
+      percentAway: 15,
+      winnerName: 'Fake Home',
+      formHome: 'W-W-W-D-D',
+      formAway: 'L-L-D-W-L',
+    );
   }
 }

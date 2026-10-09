@@ -18,10 +18,10 @@ class PredictionDialog extends StatefulWidget {
 
 class _PredictionDialogState extends State<PredictionDialog> {
   String _selectedResult = "HOME";
-  double _stake = 100.0;
+  double _points = 100.0;
   bool _isLoading = false;
 
-  Future<void> _placeBet() async {
+  Future<void> _submitPrediction() async {
     setState(() => _isLoading = true);
     final auth = Provider.of<AuthProvider>(context, listen: false);
     
@@ -35,7 +35,7 @@ class _PredictionDialogState extends State<PredictionDialog> {
         body: json.encode({
           'match_id': widget.matchId,
           'predicted_result': _selectedResult,
-          'points_staked': _stake,
+          'points_invested': _points,
         }),
       );
 
@@ -69,20 +69,20 @@ class _PredictionDialogState extends State<PredictionDialog> {
             onChanged: (val) => setState(() => _selectedResult = val!),
           ),
           const SizedBox(height: 20),
-          Text("Điểm cược: ${_stake.toInt()}"),
+          Text("Điểm dự đoán: ${_points.toInt()}"),
           Slider(
-            value: _stake,
+            value: _points,
             min: 10,
             max: 1000,
             divisions: 99,
-            onChanged: (val) => setState(() => _stake = val),
+            onChanged: (val) => setState(() => _points = val),
           ),
         ],
       ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: const Text("Hủy")),
         ElevatedButton(
-          onPressed: _isLoading ? null : _placeBet,
+          onPressed: _isLoading ? null : _submitPrediction,
           child: _isLoading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator()) : const Text("Chốt"),
         ),
       ],

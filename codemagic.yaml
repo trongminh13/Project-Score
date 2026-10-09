@@ -40,3 +40,45 @@ workflows:
         credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT
         track: alpha
         submit_as_draft: true
+
+  ios-deploy-workflow:
+    name: iOS Deployment Workflow
+    instance_type: mac_mini_m1
+    max_build_duration: 60
+    triggering:
+      events:
+        - tag
+      cancel_previous_builds: true
+
+    environment:
+      groups:
+        - app_store_credentials # Nhóm biến môi trường chứa App Store Connect API key
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: Cài đặt Keychain
+        script: |
+          keychain initialize
+      - name: Lấy Certificate và Provisioning Profile từ App Store Connect
+        script: |
+          app-store-connect fetch-signing-files "com.daiviet.quantscore" --type IOS_APP_STORE --create
+      - name: Thêm Certificates vào Keychain
+        script: |
+          keychain add-certificates
+      - name: Cấu hình Code Signing cho Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Build file IPA
+        script: |
+          flutter build ipa --release
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false

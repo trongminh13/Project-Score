@@ -5,6 +5,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/extensions/context_ext.dart';
 import '../../domain/entities/predictor_pick.dart';
 import '../cubit/predictor_round_cubit.dart';
+
 import '../cubit/predictor_round_state.dart';
 
 /// Match analysis UI. Data and prediction actions remain owned by the cubit.
@@ -15,7 +16,7 @@ class AiAnalysisView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PredictorRoundCubit, PredictorRoundState>(
       builder: (context, state) {
-        final analyses = _getAnalyses(state);
+        final analyses = _getAnalyses(context, state);
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(
@@ -474,83 +475,61 @@ class AiAnalysisView extends StatelessWidget {
     );
   }
 
-  List<_AiMatchAnalysis> _getAnalyses(PredictorRoundState state) {
+  List<_AiMatchAnalysis> _getAnalyses(BuildContext context, PredictorRoundState state) {
     if (state is PredictorRoundLoaded && state.round.matches.isNotEmpty) {
-      return state.round.matches
-          .map(
-            (m) => _AiMatchAnalysis(
-              matchId: m.id,
-              home: m.homeTeamName,
-              away: m.awayTeamName,
-              winProb: 0.60,
-              drawProb: 0.25,
-              loseProb: 0.15,
-              favoredTeam: '${m.homeTeamName} Thắng',
-              badgeText: 'Cửa trên',
-              winReason: 'Phong độ ấn tượng và lợi thế điểm tựa sân nhà.',
-              drawReason: 'Đối thủ có tổ chức phòng ngự phản công kỷ luật.',
-              loseReason:
-                  'Tập trung vào cơ hội cố định hoặc phản công chớp nhoáng.',
-              statusTag: 'Vòng đấu chính',
-              bestPick: PickOption.home,
-            ),
-          )
-          .toList();
+      return state.round.matches.map((m) {
+        final pred = state.predictions[m.id];
+        
+        if (pred == null) {
+          // Trigger lazy load
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              context.read<PredictorRoundCubit>().loadPredictionForMatch(m.id);
+            }
+          });
+          
+          return _AiMatchAnalysis(
+            matchId: m.id,
+            home: m.homeTeamName,
+            away: m.awayTeamName,
+            winProb: 0.33,
+            drawProb: 0.33,
+            loseProb: 0.34,
+            favoredTeam: 'Đang phân tích...',
+            badgeText: 'Loading',
+            winReason: 'Đang lấy dữ liệu từ hệ thống...',
+            drawReason: 'Đang lấy dữ liệu từ hệ thống...',
+            loseReason: 'Đang lấy dữ liệu từ hệ thống...',
+            statusTag: 'Phân tích AI',
+            bestPick: PickOption.draw,
+          );
+        }
+
+        final maxProb = [pred.percentHome, pred.percentDraw, pred.percentAway]
+            .reduce((a, b) => a > b ? a : b);
+            
+        PickOption bestPick = PickOption.draw;
+        if (maxProb == pred.percentHome) bestPick = PickOption.home;
+        if (maxProb == pred.percentAway) bestPick = PickOption.away;
+
+        return _AiMatchAnalysis(
+          matchId: m.id,
+          home: m.homeTeamName,
+          away: m.awayTeamName,
+          winProb: pred.percentHome / 100,
+          drawProb: pred.percentDraw / 100,
+          loseProb: pred.percentAway / 100,
+          favoredTeam: pred.winnerName.isNotEmpty ? '${pred.winnerName} Thắng' : 'Hòa',
+          badgeText: 'AI Suggestion',
+          winReason: pred.advice,
+          drawReason: 'Phong độ: ${pred.formHome} vs ${pred.formAway}',
+          loseReason: 'Dữ liệu chuyên sâu từ API-Football',
+          statusTag: 'Dự báo',
+          bestPick: bestPick,
+        );
+      }).toList();
     }
-    return [
-      const _AiMatchAnalysis(
-        matchId: null,
-        home: 'Arsenal',
-        away: 'Chelsea',
-        winProb: 0.65,
-        drawProb: 0.20,
-        loseProb: 0.15,
-        favoredTeam: 'Arsenal Thắng',
-        badgeText: 'Cửa trên',
-        winReason:
-            'Sân nhà bất bại 6 trận, Saka & Odegaard đạt điểm rơi phong độ.',
-        drawReason:
-            'Chelsea có xu hướng đá thực dụng phòng ngự phản công trong hiệp 1.',
-        loseReason: 'Đột biến từ các pha bóng cố định hoặc sai lầm cá nhân.',
-        statusTag: 'Tâm điểm vòng',
-        bestPick: PickOption.home,
-      ),
-      const _AiMatchAnalysis(
-        matchId: null,
-        home: 'Liverpool',
-        away: 'Man City',
-        winProb: 0.40,
-        drawProb: 0.35,
-        loseProb: 0.25,
-        favoredTeam: 'Liverpool Thắng',
-        badgeText: 'Được đánh giá cao',
-        winReason: 'Điểm tựa chảo lửa Anfield, chỉ số xG đạt 2.3 bàn/trận.',
-        drawReason:
-            'Lịch sử đối đầu 5 trận gần nhất có tới 3 trận bất phân thắng bại.',
-        loseReason:
-            'Erling Haaland và De Bruyne có khả năng kết liễu trận đấu.',
-        statusTag: 'Đại chiến',
-        bestPick: PickOption.home,
-      ),
-      const _AiMatchAnalysis(
-        matchId: null,
-        home: 'Real Madrid',
-        away: 'Barcelona',
-        winProb: 0.55,
-        drawProb: 0.25,
-        loseProb: 0.20,
-        favoredTeam: 'Real Madrid Thắng',
-        badgeText: 'Cửa trên',
-        winReason:
-            'Vinicius và Bellingham tạo ra hiệu suất chuyển hóa cơ hội vượt trội.',
-        drawReason:
-            'Tuyến tiền vệ đôi bên tranh chấp quyết liệt ở khu trung tuyến.',
-        loseReason:
-            'Lamine Yamal tạo đột biến lớn ở các tình huống 1 đấu 1 biên phải.',
-        statusTag: 'El Clásico',
-        bestPick: PickOption.home,
-      ),
-    ];
+    return [];
   }
 }
 

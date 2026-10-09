@@ -286,8 +286,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(width: AppSpacing.m),
                   Expanded(
                     child: _StatCard(
-                      title: 'SỐ TRẬN CƯỢC',
-                      value: '${_profileData!['total_bets']}',
+                      title: 'SỐ TRẬN DỰ ĐOÁN',
+                      value: '${_profileData!['total_bets'] ?? _profileData!['total_predictions'] ?? 0}',
                       color: context.colors.primary,
                       icon: Icons.sports_soccer_rounded,
                       delay: 400,
