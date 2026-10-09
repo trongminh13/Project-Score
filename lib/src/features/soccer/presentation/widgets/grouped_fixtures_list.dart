@@ -263,7 +263,6 @@ class _GroupedFixturesListState extends State<GroupedFixturesList> {
     final groups = _buildGroupedFixturesByLeague(widget.fixtures);
     final target = _findTargetIndices(groups);
     final targetLeagueIndex = target.leagueIndex;
-    final targetFixtureIndex = target.fixtureIndex;
 
     return CustomScrollView(
       controller: widget.isScrollable ? _scrollController : null,
