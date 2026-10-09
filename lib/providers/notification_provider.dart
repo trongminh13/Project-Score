@@ -1,3 +1,4 @@
+import '../src/core/config/env_config.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
@@ -45,8 +46,8 @@ class NotificationProvider extends ChangeNotifier {
 
   Future<void> fetchUnreadCount(String token) async {
     try {
-      final res = await http.get(Uri.parse('\$baseUrl/unread-count'), headers: {
-        'Authorization': 'Bearer \$token'
+      final res = await http.get(Uri.parse('$baseUrl/unread-count'), headers: {
+        'Authorization': 'Bearer $token'
       });
       if (res.statusCode == 200) {
         final data = json.decode(res.body);
@@ -63,7 +64,7 @@ class NotificationProvider extends ChangeNotifier {
   Future<void> fetchNotifications(String token) async {
     try {
       final res = await http.get(Uri.parse(baseUrl), headers: {
-        'Authorization': 'Bearer \$token'
+        'Authorization': 'Bearer $token'
       });
       if (res.statusCode == 200) {
         final data = json.decode(res.body);
@@ -81,8 +82,8 @@ class NotificationProvider extends ChangeNotifier {
 
   Future<void> markAsRead(String token, int notifId) async {
     try {
-      final res = await http.put(Uri.parse('\$baseUrl/\$notifId/read'), headers: {
-        'Authorization': 'Bearer \$token'
+      final res = await http.put(Uri.parse('$baseUrl/$notifId/read'), headers: {
+        'Authorization': 'Bearer $token'
       });
       if (res.statusCode == 200) {
         // Optimistic update

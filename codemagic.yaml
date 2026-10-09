@@ -58,6 +58,13 @@ workflows:
       cocoapods: default
 
     scripts:
+      - name: Linter
+        script: |
+          flutter pub get
+          flutter analyze
+      - name: Unit Tests
+        script: |
+          flutter test
       - name: Cài đặt Keychain
         script: |
           keychain initialize
@@ -72,7 +79,8 @@ workflows:
           xcode-project use-profiles
       - name: Build file IPA
         script: |
-          flutter build ipa --release
+          
+          flutter build ipa --release --dart-define=API_FOOTBALL_KEY=$API_FOOTBALL_KEY
 
     artifacts:
       - build/ios/ipa/*.ipa

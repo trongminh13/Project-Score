@@ -1,3 +1,4 @@
+import '../../../core/config/env_config.dart';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     try {
       final res = await http.post(
-        Uri.parse('http://localhost:8000/api/v1/gamification/claim-daily'),
+        Uri.parse('${EnvConfig.backendBaseUrl}/gamification/claim-daily'),
         headers: {'Authorization': 'Bearer ${auth.token}'},
       );
       final data = jsonDecode(res.body);
@@ -74,10 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    String baseUrl = 'http://127.0.0.1:8000/api/v1';
-    try {
-      if (Platform.isAndroid) baseUrl = 'http://10.0.2.2:8000/api/v1';
-    } catch (_) {}
+    String baseUrl = EnvConfig.backendBaseUrl;
 
     try {
       final res = await http.get(

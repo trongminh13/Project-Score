@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:live_score/src/features/predictor/data/models/prediction_model.dart';
+
 import 'package:live_score/src/features/predictor/presentation/cubit/predictor_round_cubit.dart';
 import 'package:live_score/src/features/predictor/presentation/cubit/predictor_round_state.dart';
 import 'package:live_score/src/features/predictor/domain/entities/predictor_round.dart';
@@ -63,6 +65,19 @@ class FakePredictorRepository implements PredictorRepository {
     if (_round != null) {
       _round = _round!.copyWith(isSubmitted: true);
     }
+  }
+
+  @override
+  Future<PredictionModel?> getMatchPrediction(int fixtureId) async {
+    return const PredictionModel(
+      advice: 'Test advice',
+      percentHome: 50,
+      percentDraw: 25,
+      percentAway: 25,
+      winnerName: 'Home',
+      formHome: 'W',
+      formAway: 'L',
+    );
   }
 }
 
