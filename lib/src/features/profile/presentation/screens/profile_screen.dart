@@ -1,4 +1,4 @@
-import '../../../core/config/env_config.dart';
+import '../../../../core/config/env_config.dart';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:live_score/src/core/extensions/context_ext.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import '../../../../../../providers/auth_provider.dart';
+import '../../../../../providers/auth_provider.dart';
 import '../../../../config/app_route.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _claimDailyBonus() async {
     final auth = context.read<AuthProvider>();
     if (!auth.isAuthenticated) return;
-    
+
     try {
       final res = await http.post(
         Uri.parse('${EnvConfig.backendBaseUrl}/gamification/claim-daily'),
@@ -54,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             backgroundColor: context.colorsExt.green,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppBorderRadius.largeAll),
-          )
+          ),
         );
         _fetchProfile();
       } else {
@@ -100,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (status == 'LOST') return context.colorsExt.red;
     return context.colorsExt.yellow;
   }
-  
+
   IconData _getStatusIcon(String status) {
     if (status == 'WON') return Icons.check_circle_rounded;
     if (status == 'LOST') return Icons.cancel_rounded;
@@ -133,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: AppSpacing.m),
               Text("Lỗi tải dữ liệu", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: context.colorsExt.textSubtle)),
             ],
-          )
+          ),
         ),
       );
     }
@@ -152,7 +152,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header Profile
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.m),
               child: Column(
@@ -163,8 +162,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       shape: BoxShape.circle,
                       gradient: context.colorsExt.accentGradient,
                       boxShadow: [
-                        BoxShadow(color: context.colors.primary.withOpacity(0.3), blurRadius: 20, spreadRadius: 2)
-                      ]
+                        BoxShadow(color: context.colors.primary.withOpacity(0.3), blurRadius: 20, spreadRadius: 2),
+                      ],
                     ),
                     child: CircleAvatar(
                       radius: 45,
@@ -172,9 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Icon(Icons.person, size: 50, color: context.colors.primary),
                     ),
                   ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack),
-                  
                   const SizedBox(height: AppSpacing.m),
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -190,23 +187,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             gradient: context.colorsExt.liveGradient,
                             borderRadius: AppBorderRadius.largeAll,
                             boxShadow: [
-                              BoxShadow(color: context.colorsExt.yellow.withOpacity(0.3), blurRadius: 8)
-                            ]
+                              BoxShadow(color: context.colorsExt.yellow.withOpacity(0.3), blurRadius: 8),
+                            ],
                           ),
                           child: const Text('VIP', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                         ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(duration: 2.seconds),
                       ]
                     ],
                   ).animate().fade(delay: 100.ms).slideY(begin: 0.2),
-                  
                   const SizedBox(height: AppSpacing.xl),
-                  
                   if (!context.watch<AuthProvider>().isPremium) ...[
                     const _UpgradeVipBanner(),
                     const SizedBox(height: AppSpacing.xl),
                   ],
-                  
-                  // Daily Bonus Button
                   GestureDetector(
                     onTap: _claimDailyBonus,
                     child: Container(
@@ -222,8 +215,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         borderRadius: AppBorderRadius.largeAll,
                         border: Border.all(color: context.colors.primary.withOpacity(0.5), width: 1.5),
                         boxShadow: [
-                          BoxShadow(color: context.colors.primary.withOpacity(0.15), blurRadius: 15, spreadRadius: 1)
-                        ]
+                          BoxShadow(color: context.colors.primary.withOpacity(0.15), blurRadius: 15, spreadRadius: 1),
+                        ],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -236,25 +229,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             child: Icon(Icons.monetization_on, color: context.colorsExt.yellow, size: 28),
                           ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1500.ms, color: Colors.white),
-                          
                           const SizedBox(width: AppSpacing.m),
-                          
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 '${(_profileData!['balance'] as num).toInt()} ĐIỂM',
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  color: context.colors.primary, 
+                                  color: context.colors.primary,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.2,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                "Nhấn để nhận quà hằng ngày 🎁", 
+                                "Nhấn để nhận quà hằng ngày 🎁",
                                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: context.colorsExt.textSubtle
+                                  color: context.colorsExt.textSubtle,
                                 ),
                               ),
                             ],
@@ -266,8 +257,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            
-            // Stats Row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Row(
@@ -294,10 +283,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            
             const SizedBox(height: AppSpacing.xxl),
-            
-            // History List
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -305,8 +291,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: context.colorsExt.surfaceElevated,
                   borderRadius: const BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(32)),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, -5))
-                  ]
+                    BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, -5)),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,11 +300,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(AppSpacing.xxl, AppSpacing.xxl, AppSpacing.xxl, AppSpacing.m),
                       child: Text(
-                        'Lịch Sử Cược', 
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
+                        'Lịch Sử Cược',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ).animate().fade(delay: 500.ms),
-                    
                     Expanded(
                       child: history.isEmpty
                           ? Center(
@@ -329,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   const SizedBox(height: AppSpacing.s),
                                   Text("Chưa có lịch sử cược", style: TextStyle(color: context.colorsExt.textMuted)),
                                 ],
-                              ).animate().fade()
+                              ).animate().fade(),
                             )
                           : ListView.separated(
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.s),
@@ -339,7 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 final item = history[i];
                                 final statusColor = _getStatusColor(item['status']);
                                 final statusIcon = _getStatusIcon(item['status']);
-                                
+
                                 return Container(
                                   padding: const EdgeInsets.all(AppSpacing.m),
                                   decoration: BoxDecoration(
@@ -363,7 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              item['match'], 
+                                              item['match'],
                                               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -374,14 +359,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 Icon(Icons.lightbulb_outline, size: 14, color: context.colorsExt.textSubtle),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  'Chọn: ${item['predicted_result']}', 
+                                                  'Chọn: ${item['predicted_result']}',
                                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorsExt.textSubtle),
                                                 ),
                                                 const SizedBox(width: 12),
                                                 Icon(Icons.monetization_on_outlined, size: 14, color: context.colorsExt.textSubtle),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  'Cược: ${item['points_staked']}', 
+                                                  'Cược: ${item['points_staked']}',
                                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorsExt.textSubtle),
                                                 ),
                                               ],
@@ -407,7 +392,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                             ),
                     ),
-                    
                     Padding(
                       padding: const EdgeInsets.fromLTRB(AppSpacing.xxl, AppSpacing.m, AppSpacing.xxl, AppSpacing.xxl),
                       child: SizedBox(
@@ -429,7 +413,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ).animate().fade(delay: 800.ms).slideY(begin: 0.5),
-
                     const Divider(color: Colors.white24, height: 32),
                     ListTile(
                       leading: const Icon(Icons.delete_forever, color: Colors.redAccent),
@@ -446,13 +429,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
   void _showDeleteAccountDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
         title: const Text('Xác nhận xóa tài khoản', style: TextStyle(color: Colors.redAccent)),
-        content: const Text('Tài khoản của bạn và toàn bộ dữ liệu dự đoán sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.', style: TextStyle(color: Colors.white70)),
+        content: const Text('Tài khoản của bạn và toàn bộ dữ liệu dự đoán sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.', style: TextStyle(color: Colors.white)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -480,8 +464,8 @@ class _StatCard extends StatelessWidget {
   final int delay;
 
   const _StatCard({
-    required this.title, 
-    required this.value, 
+    required this.title,
+    required this.value,
     required this.color,
     required this.icon,
     required this.delay,
@@ -496,8 +480,8 @@ class _StatCard extends StatelessWidget {
         borderRadius: AppBorderRadius.largeAll,
         border: Border.all(color: context.colorsExt.dividerSubtle.withOpacity(0.3)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))
-        ]
+          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -507,22 +491,22 @@ class _StatCard extends StatelessWidget {
               Icon(icon, size: 16, color: context.colorsExt.textSubtle),
               const SizedBox(width: AppSpacing.xs),
               Text(
-                title, 
+                title,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: context.colorsExt.textSubtle, 
+                  color: context.colorsExt.textSubtle,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
-                )
+                ),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.s),
           Text(
-            value, 
+            value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: color, 
+              color: color,
               fontWeight: FontWeight.w900,
-            )
+            ),
           ),
         ],
       ),
@@ -548,8 +532,8 @@ class _UpgradeVipBanner extends StatelessWidget {
               color: context.colors.primary.withValues(alpha: 0.4),
               blurRadius: 15,
               spreadRadius: 2,
-            )
-          ]
+            ),
+          ],
         ),
         child: Row(
           children: [
