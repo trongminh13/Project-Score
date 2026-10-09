@@ -5,6 +5,7 @@ import '../../../../../core/domain/entities/soccer_fixture.dart';
 import '../../../domain/use_cases/day_fixtures_usecase.dart';
 import '../../../domain/use_cases/live_fixtures_usecase.dart';
 import '../../../domain/use_cases/standings_usecase.dart';
+import '../../../../../core/constants/app_constants.dart';
 import 'soccer_state.dart';
 
 /// Represents the soccer cubit entity/model.
@@ -24,6 +25,8 @@ class SoccerCubit extends Cubit<SoccerState> {
   bool _isLoadingTodayFixtures = false;
   bool _isLoadingCurrentRoundFixtures = false;
   bool _isLoadingStandings = false;
+  
+  List<SoccerFixture> cachedTodayFixtures = [];
 
   /// Get current round fixtures.
   Future<void> getCurrentRoundFixtures({required int competitionId}) async {
@@ -34,12 +37,23 @@ class SoccerCubit extends Cubit<SoccerState> {
       emit(const SoccerCurrentRoundFixturesLoading());
       final fixtures = await currentRoundFixturesUseCase(competitionId);
       fixtures.fold(
-        (left) => emit(
-          SoccerCurrentRoundFixturesLoadFailure(
-            left.message,
-            competitionId: competitionId,
-          ),
-        ),
+        (left) {
+          final apiFootballLeagueId = AppConstants.mapToApiFootballLeagueId(competitionId);
+          final fallbackFixtures = cachedTodayFixtures
+              .where((f) => f.fixtureLeague.id == apiFootballLeagueId)
+              .toList();
+
+          if (fallbackFixtures.isNotEmpty) {
+            emit(SoccerCurrentRoundFixturesLoaded(fallbackFixtures));
+          } else {
+            emit(
+              SoccerCurrentRoundFixturesLoadFailure(
+                left.message,
+                competitionId: competitionId,
+              ),
+            );
+          }
+        },
         (right) => emit(SoccerCurrentRoundFixturesLoaded(right)),
       );
     } finally {
@@ -80,6 +94,7 @@ class SoccerCubit extends Cubit<SoccerState> {
                   (l) => emit(SoccerTodayFixturesLoadFailure(l.message)),
                   (r) {
                      final currentLive = r.where((fixture) => fixture.status.isLive);
+                     cachedTodayFixtures = r;
                      emit(
                        SoccerTodayFixturesLoaded(
                          todayFixtures: r,
@@ -99,6 +114,7 @@ class SoccerCubit extends Cubit<SoccerState> {
               return fixture;
             }).toList();
             
+            cachedTodayFixtures = updatedTodayFixtures;
             emit(
               SoccerTodayFixturesLoaded(
                 todayFixtures: updatedTodayFixtures,
@@ -114,6 +130,7 @@ class SoccerCubit extends Cubit<SoccerState> {
           (left) => emit(SoccerTodayFixturesLoadFailure(left.message)),
           (right) {
             final liveFixtures = right.where((fixture) => fixture.status.isLive);
+            cachedTodayFixtures = right;
             emit(
               SoccerTodayFixturesLoaded(
                 todayFixtures: right,

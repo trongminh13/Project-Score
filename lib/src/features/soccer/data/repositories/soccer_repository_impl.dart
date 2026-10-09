@@ -14,6 +14,7 @@ import '../datasources/soccer_data_source.dart';
 class SoccerRepositoryImpl implements SoccerRepository {
   final SoccerDataSource soccerDataSource;
   final NetworkInfo networkInfo;
+  final Map<int, List<SoccerFixture>> _currentRoundCache = {};
 
   SoccerRepositoryImpl({
     required this.soccerDataSource,
@@ -24,11 +25,17 @@ class SoccerRepositoryImpl implements SoccerRepository {
   Future<Either<Failure, List<SoccerFixture>>> getCurrentRoundFixtures({
     required int competitionId,
   }) {
+    if (_currentRoundCache.containsKey(competitionId)) {
+      return Future.value(Right(_currentRoundCache[competitionId]!));
+    }
+
     return safeApiCall(networkInfo, () async {
       final result = await soccerDataSource.getCurrentRoundFixtures(
         competitionId: competitionId,
       );
-      return result.map((fixture) => fixture.toDomain()).toList();
+      final mapped = result.map((fixture) => fixture.toDomain()).toList();
+      _currentRoundCache[competitionId] = mapped;
+      return mapped;
     });
   }
 
